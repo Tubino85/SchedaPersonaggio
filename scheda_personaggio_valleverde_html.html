@@ -1,0 +1,595 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<title>Scheda Personaggio D&D – Sistema Valleverde</title>
+<style>
+    body { font-family: Arial, sans-serif; margin: 20px; background:#f2f2f2; }
+    h2 { margin-top:0; }
+    .container { max-width: 1100px; margin: auto; padding: 20px; background:white; border-radius: 10px; box-shadow:0 0 10px rgba(0,0,0,0.2); }
+    #charImage { width:180px; height:180px; object-fit:cover; border:2px solid #444; border-radius:10px; }
+    input, select, textarea { width:100%; margin:5px 0 15px; padding:8px; box-sizing:border-box; }
+    .tabs { display:flex; border-bottom:2px solid #aaa; margin-top:20px; }
+    .tab { padding:10px 20px; cursor:pointer; border:1px solid #aaa; border-bottom:none; background:#ddd; margin-right:5px; border-radius:8px 8px 0 0; }
+    .tab.active { background:white; font-weight:bold; }
+    .tabContent { display:none; padding:20px; background:white; border:1px solid #aaa; border-top:none; border-radius:0 0 8px 8px; }
+    .tabContent.active { display:block; }
+    .flexRow { display:flex; gap:20px; flex-wrap:wrap; }
+    .col { flex:1; min-width:220px; }
+    button { padding:10px 15px; margin-top:10px; }
+    table { width:100%; border-collapse: collapse; margin-bottom:15px; }
+    th, td { border:1px solid #ccc; padding:4px 6px; font-size: 0.9rem; }
+    th { background:#eee; text-align:left; }
+    .subheading { font-weight:bold; margin-top:10px; margin-bottom:5px; }
+</style>
+<!-- Libreria SheetJS (per importare Excel) -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+</head>
+<body>
+
+<div class="container">
+
+<h2>Scheda Personaggio – Campagna Valleverde</h2>
+
+<!-- Selettore Personaggio -->
+<label><b>Seleziona personaggio</b></label>
+<select id="presetSelect" onchange="loadPreset()">
+    <option value="">— Seleziona —</option>
+    <option value="tubino">Tubino Manolesta</option>
+    <option value="padez">Padez Silvaran</option>
+    <option value="erasmo">Erasmo Di Cenere</option>
+    <option value="turi">Turi Spaccaculi</option>
+</select>
+
+<!-- Immagine PG -->
+<div style="margin:20px 0;">
+    <img id="charImage" src="img/tubino.png" alt="Immagine personaggio">
+</div>
+
+<!-- Nome -->
+<label>Nome</label>
+<input id="charName" placeholder="Nome del personaggio">
+
+<!-- TAB -->
+<div class="tabs">
+    <div class="tab active" onclick="openTab('statistiche')">Statistiche</div>
+    <div class="tab" onclick="openTab('abilita')">Abilità & Tiri Salvezza</div>
+    <div class="tab" onclick="openTab('dati')">Dati Generali</div>
+    <div class="tab" onclick="openTab('magie')">Magie</div>
+    <div class="tab" onclick="openTab('attacchi')">Attacchi</div>
+</div>
+
+<!-- STATISTICHE -->
+<div id="statistiche" class="tabContent active">
+    <div class="flexRow">
+        <div class="col">
+            <label>FOR</label><input id="forza">
+            <label>DES</label><input id="destrezza">
+            <label>COS</label><input id="costituzione">
+        </div>
+        <div class="col">
+            <label>INT</label><input id="intelligenza">
+            <label>SAG</label><input id="saggezza">
+            <label>CAR</label><input id="carisma">
+        </div>
+    </div>
+</div>
+
+<!-- ABILITÀ & TS -->
+<div id="abilita" class="tabContent">
+    <div class="flexRow">
+        <div class="col">
+            <div class="subheading">Tiri Salvezza</div>
+            <table>
+                <tr><th>Caratteristica</th><th>Mod.</th></tr>
+                <tr><td>FOR</td><td><input id="save_for"></td></tr>
+                <tr><td>DES</td><td><input id="save_des"></td></tr>
+                <tr><td>COS</td><td><input id="save_cos"></td></tr>
+                <tr><td>INT</td><td><input id="save_int"></td></tr>
+                <tr><td>SAG</td><td><input id="save_sag"></td></tr>
+                <tr><td>CAR</td><td><input id="save_car"></td></tr>
+            </table>
+        </div>
+        <div class="col">
+            <div class="subheading">Abilità</div>
+            <table>
+                <tr><th>Abilità</th><th>Mod.</th></tr>
+                <tr><td>Atletica (FOR)</td><td><input id="skill_atletica"></td></tr>
+                <tr><td>Acrobazia (DES)</td><td><input id="skill_acrobazia"></td></tr>
+                <tr><td>Rapidità di mano (DES)</td><td><input id="skill_rapidita"></td></tr>
+                <tr><td>Furtività (DES)</td><td><input id="skill_furtivita"></td></tr>
+                <tr><td>Arcana (INT)</td><td><input id="skill_arcana"></td></tr>
+                <tr><td>Indagare (INT)</td><td><input id="skill_indagare"></td></tr>
+                <tr><td>Natura (INT)</td><td><input id="skill_natura"></td></tr>
+                <tr><td>Religione (INT)</td><td><input id="skill_religione"></td></tr>
+                <tr><td>Storia (INT)</td><td><input id="skill_storia"></td></tr>
+                <tr><td>Addestrare animali (SAG)</td><td><input id="skill_addestrare"></td></tr>
+                <tr><td>Intuizione (SAG)</td><td><input id="skill_intuizione"></td></tr>
+                <tr><td>Medicina (SAG)</td><td><input id="skill_medicina"></td></tr>
+                <tr><td>Percezione (SAG)</td><td><input id="skill_percezione"></td></tr>
+                <tr><td>Sopravvivenza (SAG)</td><td><input id="skill_sopravvivenza"></td></tr>
+                <tr><td>Raggirare (CAR)</td><td><input id="skill_raggirare"></td></tr>
+                <tr><td>Intimidire (CAR)</td><td><input id="skill_intimidire"></td></tr>
+                <tr><td>Intrattenere (CAR)</td><td><input id="skill_intrattenere"></td></tr>
+                <tr><td>Persuasione (CAR)</td><td><input id="skill_persuasione"></td></tr>
+            </table>
+        </div>
+    </div>
+</div>
+
+<!-- DATI GENERALI -->
+<div id="dati" class="tabContent">
+    <div class="flexRow">
+        <div class="col">
+            <label>Classe / Livello</label><input id="classLevel">
+            <label>XP</label><input id="exp">
+            <label>PF attuali</label><input id="hp">
+        </div>
+        <div class="col">
+            <label>CA</label><input id="ac">
+            <label>Velocità</label><input id="speed">
+            <label>Iniziativa</label><input id="initiative">
+        </div>
+    </div>
+</div>
+
+<!-- MAGIE -->
+<div id="magie" class="tabContent">
+    <label>Trucchetti</label>
+    <textarea id="cantrips" rows="4"></textarea>
+
+    <label>Magie Preparare</label>
+    <textarea id="preparedSpells" rows="6"></textarea>
+
+    <label>Slot Incantesimi</label>
+    <textarea id="spellSlots" rows="4"></textarea>
+</div>
+
+<!-- ATTACCHI -->
+<div id="attacchi" class="tabContent">
+    <table>
+        <tr><th>Nome Attacco</th><th>TxC</th><th>Danni</th><th>Note</th></tr>
+        <tr>
+            <td><input id="atk1_nome"></td>
+            <td><input id="atk1_txc"></td>
+            <td><input id="atk1_danni"></td>
+            <td><input id="atk1_note"></td>
+        </tr>
+        <tr>
+            <td><input id="atk2_nome"></td>
+            <td><input id="atk2_txc"></td>
+            <td><input id="atk2_danni"></td>
+            <td><input id="atk2_note"></td>
+        </tr>
+        <tr>
+            <td><input id="atk3_nome"></td>
+            <td><input id="atk3_txc"></td>
+            <td><input id="atk3_danni"></td>
+            <td><input id="atk3_note"></td>
+        </tr>
+        <tr>
+            <td><input id="atk4_nome"></td>
+            <td><input id="atk4_txc"></td>
+            <td><input id="atk4_danni"></td>
+            <td><input id="atk4_note"></td>
+        </tr>
+    </table>
+</div>
+
+<!-- Import / Export -->
+<h3>Import / Export</h3>
+<input type="file" id="fileInput" onchange="importFile(event)">
+<button onclick="exportJSON()">Esporta in JSON</button>
+
+</div>
+
+<script>
+const PRESETS = {
+    tubino: {
+        name:"Tubino Manolesta",
+        img:"img/tubino.png",
+        stats:{for:10, des:16, cos:14, int:13, sag:12, car:12},
+        saves:{for:"+0", des:"+5", cos:"+2", int:"+3", sag:"+1", car:"+1"},
+        skills:{
+            acrobazia:"+5",
+            atletica:"",
+            rapidita:"+5",
+            furtivita:"+7",
+            arcana:"",
+            indagare:"+3",
+            natura:"",
+            religione:"",
+            storia:"",
+            addestrare:"",
+            intuizione:"",
+            medicina:"",
+            percezione:"+1",
+            sopravvivenza:"",
+            raggirare:"+1",
+            intimidire:"",
+            intrattenere:"",
+            persuasione:""
+        },
+        classlevel:"Ladro 3",
+        exp:"1200 / 2700",
+        hp:"24",
+        ac:"14",
+        speed:"7.5 m",
+        initiative:"+3",
+        cantrips:"",
+        prepared:"",
+        slots:"",
+        attacks:[
+            {nome:"Rapiere", txc:"+5", danni:"1d8+3", note:""},
+            {nome:"Arco corto", txc:"+5", danni:"1d6+3", note:""},
+            {nome:"Pugnale", txc:"+5", danni:"1d4+3", note:""},
+            {nome:"", txc:"", danni:"", note:""}
+        ]
+    },
+    padez:{
+        name:"Padez Silvaran",
+        img:"img/padez.png",
+        stats:{for:11, des:13, cos:11, int:10, sag:12, car:8},
+        saves:{for:"0", des:"+1", cos:"0", int:"+2", sag:"+3", car:"-1"},
+        skills:{
+            acrobazia:"",
+            atletica:"",
+            rapidita:"",
+            furtivita:"+1",
+            arcana:"",
+            indagare:"",
+            natura:"",
+            religione:"+2",
+            storia:"",
+            addestrare:"",
+            intuizione:"+3",
+            medicina:"+3",
+            percezione:"+3",
+            sopravvivenza:"+3",
+            raggirare:"",
+            intimidire:"",
+            intrattenere:"",
+            persuasione:""
+        },
+        classlevel:"Druido 3",
+        exp:"1200 / 2700",
+        hp:"16",
+        ac:"14",
+        speed:"10.5 m",
+        initiative:"+1",
+        cantrips:"Guida\nFrusta di Rovi\nProdurre Fiamma",
+        prepared:"Parola Guaritrice\nBacche Benefiche\nRaggio di Luna\nCrescita Spinosa\n(Pelle di Corteccia – sempre preparato)\n(Camminare sui Muri – sempre preparato)",
+        slots:"1°: 4/4\n2°: 2/2",
+        attacks:[
+            {nome:"Scimitarra", txc:"+3", danni:"1d6+1", note:""},
+            {nome:"Arco corto", txc:"+3", danni:"1d6+1", note:""},
+            {nome:"Morso (Lupo)", txc:"+4", danni:"2d4+2", note:"Forma Selvatica"},
+            {nome:"", txc:"", danni:"", note:""}
+        ]
+    },
+    erasmo:{
+        name:"Erasmo Di Cenere",
+        img:"img/erasmo.png",
+        stats:{for:10, des:15, cos:15, int:16, sag:13, car:11},
+        saves:{for:"0", des:"+2", cos:"+2", int:"+5", sag:"+3", car:"0"},
+        skills:{
+            acrobazia:"",
+            atletica:"",
+            rapidita:"",
+            furtivita:"",
+            arcana:"+5",
+            indagare:"+5",
+            natura:"",
+            religione:"+5",
+            storia:"+5",
+            addestrare:"",
+            intuizione:"",
+            medicina:"",
+            percezione:"+1",
+            sopravvivenza:"",
+            raggirare:"",
+            intimidire:"",
+            intrattenere:"",
+            persuasione:""
+        },
+        classlevel:"Mago 3",
+        exp:"1200 / 2700",
+        hp:"20",
+        ac:"15 (con Armatura Magica)",
+        speed:"9 m",
+        initiative:"+2",
+        cantrips:"Dardo di Fuoco\nRaggio di Gelo\nMano Magica",
+        prepared:"Armatura Magica\nScudo\nDardo Incantato\nSonno\nRaggio Rovente\nImmagine Speculare",
+        slots:"1°: 4/4\n2°: 2/2",
+        attacks:[
+            {nome:"Dardo di Fuoco", txc:"+5", danni:"1d10 fuoco", note:"Trucchetto"},
+            {nome:"Raggio di Gelo", txc:"+5", danni:"1d8 freddo", note:"Trucchetto"},
+            {nome:"Balestra leggera", txc:"+4", danni:"1d8+2", note:""},
+            {nome:"Pugnale", txc:"+4", danni:"1d4+2", note:""}
+        ]
+    },
+    turi:{
+        name:"Turi Spaccaculi",
+        img:"img/turi.png",
+        stats:{for:16, des:14, cos:18, int:13, sag:18, car:13},
+        saves:{for:"+3", des:"+2", cos:"+4", int:"+1", sag:"+6", car:"+3"},
+        skills:{
+            acrobazia:"",
+            atletica:"+5",
+            rapidita:"",
+            furtivita:"",
+            arcana:"",
+            indagare:"",
+            natura:"",
+            religione:"+3",
+            storia:"",
+            addestrare:"",
+            intuizione:"",
+            medicina:"+6",
+            percezione:"",
+            sopravvivenza:"",
+            raggirare:"",
+            intimidire:"+3",
+            intrattenere:"",
+            persuasione:""
+        },
+        classlevel:"Chierico 3 (Dominio Guerra)",
+        exp:"1200 / 2700",
+        hp:"32",
+        ac:"18",
+        speed:"7.5 m",
+        initiative:"+2",
+        cantrips:"Fiamma Sacra\nGuida\nTaumaturgia",
+        prepared:"Benedizione\nCura Ferite\nParola Guaritrice\nDardo Guidato\nComando\nSantuario\nAiuto\n(Arma Spirituale + Arma Magica – sempre preparati)",
+        slots:"1°: 4/4\n2°: 2/2",
+        attacks:[
+            {nome:"Martello da guerra", txc:"+5", danni:"1d8+3 (1 mano) / 1d10+3 (2 mani)", note:""},
+            {nome:"Ascia a mano", txc:"+5", danni:"1d6+3", note:"Lancio 6/18 m"},
+            {nome:"Arma Spirituale", txc:"+6", danni:"1d8+4", note:"Incantesimo"},
+            {nome:"", txc:"", danni:"", note:""}
+        ]
+    }
+};
+
+function setValue(id, val){
+    const el = document.getElementById(id);
+    if(el) el.value = val !== undefined ? val : "";
+}
+
+function loadPreset(){
+    const select = document.getElementById('presetSelect');
+    const key = select.value;
+    const p = PRESETS[key];
+    if(!p) return;
+
+    document.getElementById('charName').value = p.name;
+    document.getElementById('charImage').src = p.img;
+
+    // Statistiche base
+    setValue('forza', p.stats.for);
+    setValue('destrezza', p.stats.des);
+    setValue('costituzione', p.stats.cos);
+    setValue('intelligenza', p.stats.int);
+    setValue('saggezza', p.stats.sag);
+    setValue('carisma', p.stats.car);
+
+    // Tiri salvezza
+    setValue('save_for', p.saves.for);
+    setValue('save_des', p.saves.des);
+    setValue('save_cos', p.saves.cos);
+    setValue('save_int', p.saves.int);
+    setValue('save_sag', p.saves.sag);
+    setValue('save_car', p.saves.car);
+
+    // Abilità
+    for (const keySkill in p.skills){
+        setValue('skill_' + keySkill, p.skills[keySkill]);
+    }
+
+    // Dati generali
+    setValue('classLevel', p.classlevel);
+    setValue('exp', p.exp);
+    setValue('hp', p.hp);
+    setValue('ac', p.ac);
+    setValue('speed', p.speed);
+    setValue('initiative', p.initiative);
+
+    // Magie
+    setValue('cantrips', p.cantrips);
+    setValue('preparedSpells', p.prepared);
+    setValue('spellSlots', p.slots);
+
+    // Attacchi
+    for(let i=0;i<4;i++){
+        const atk = p.attacks[i] || {nome:"", txc:"", danni:"", note:""};
+        setValue('atk' + (i+1) + '_nome', atk.nome);
+        setValue('atk' + (i+1) + '_txc', atk.txc);
+        setValue('atk' + (i+1) + '_danni', atk.danni);
+        setValue('atk' + (i+1) + '_note', atk.note);
+    }
+}
+
+function openTab(id){
+    document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+    document.querySelectorAll('.tabContent').forEach(c=>c.classList.remove('active'));
+    document.querySelector(`.tab[onclick*="${id}"]`).classList.add('active');
+    document.getElementById(id).classList.add('active');
+}
+
+function exportJSON(){
+    let skills = {
+        atletica: document.getElementById('skill_atletica').value,
+        acrobazia: document.getElementById('skill_acrobazia').value,
+        rapidita: document.getElementById('skill_rapidita').value,
+        furtivita: document.getElementById('skill_furtivita').value,
+        arcana: document.getElementById('skill_arcana').value,
+        indagare: document.getElementById('skill_indagare').value,
+        natura: document.getElementById('skill_natura').value,
+        religione: document.getElementById('skill_religione').value,
+        storia: document.getElementById('skill_storia').value,
+        addestrare: document.getElementById('skill_addestrare').value,
+        intuizione: document.getElementById('skill_intuizione').value,
+        medicina: document.getElementById('skill_medicina').value,
+        percezione: document.getElementById('skill_percezione').value,
+        sopravvivenza: document.getElementById('skill_sopravvivenza').value,
+        raggirare: document.getElementById('skill_raggirare').value,
+        intimidire: document.getElementById('skill_intimidire').value,
+        intrattenere: document.getElementById('skill_intrattenere').value,
+        persuasione: document.getElementById('skill_persuasione').value
+    };
+
+    let saves = {
+        for: document.getElementById('save_for').value,
+        des: document.getElementById('save_des').value,
+        cos: document.getElementById('save_cos').value,
+        int: document.getElementById('save_int').value,
+        sag: document.getElementById('save_sag').value,
+        car: document.getElementById('save_car').value
+    };
+
+    let attacks = [];
+    for(let i=1;i<=4;i++){
+        attacks.push({
+            nome: document.getElementById('atk'+i+'_nome').value,
+            txc: document.getElementById('atk'+i+'_txc').value,
+            danni: document.getElementById('atk'+i+'_danni').value,
+            note: document.getElementById('atk'+i+'_note').value
+        });
+    }
+
+    let data = {
+        name: document.getElementById('charName').value,
+        stats:{
+            for:document.getElementById('forza').value,
+            des:document.getElementById('destrezza').value,
+            cos:document.getElementById('costituzione').value,
+            int:document.getElementById('intelligenza').value,
+            sag:document.getElementById('saggezza').value,
+            car:document.getElementById('carisma').value
+        },
+        saves: saves,
+        skills: skills,
+        classLevel: document.getElementById('classLevel').value,
+        exp: document.getElementById('exp').value,
+        hp: document.getElementById('hp').value,
+        ac: document.getElementById('ac').value,
+        speed: document.getElementById('speed').value,
+        initiative: document.getElementById('initiative').value,
+        cantrips: document.getElementById('cantrips').value,
+        prepared: document.getElementById('preparedSpells').value,
+        slots: document.getElementById('spellSlots').value,
+        attacks: attacks
+    };
+
+    let blob = new Blob([JSON.stringify(data, null, 2)], {type:"application/json"});
+    let url = URL.createObjectURL(blob);
+    let a = document.createElement("a");
+    a.href=url;
+    a.download="scheda_personaggio.json";
+    a.click();
+}
+
+function importFile(e){
+    let file = e.target.files[0];
+    if(!file) return;
+
+    let reader = new FileReader();
+
+    if(file.name.endsWith(".json")){
+        reader.onload = ()=>{
+            let d = JSON.parse(reader.result);
+            fillForm(d);
+        };
+        reader.readAsText(file);
+    }
+
+    if(file.name.endsWith(".xlsx") || file.name.endsWith(".xls")){
+        reader.onload = ()=>{
+            let data = new Uint8Array(reader.result);
+            let workbook = XLSX.read(data, {type:"array"});
+            let sheet = workbook.Sheets[workbook.SheetNames[0]];
+            let json = XLSX.utils.sheet_to_json(sheet, {header:1});
+            let obj = {};
+            json.forEach(row=>{
+                if(row[0] && row[1]) obj[row[0]] = row[1];
+            });
+            fillForm(obj);
+        };
+        reader.readAsArrayBuffer(file);
+    }
+}
+
+function fillForm(d){
+    if(d.name) document.getElementById('charName').value = d.name;
+
+    if(d.stats){
+        setValue('forza', d.stats.for);
+        setValue('destrezza', d.stats.des);
+        setValue('costituzione', d.stats.cos);
+        setValue('intelligenza', d.stats.int);
+        setValue('saggezza', d.stats.sag);
+        setValue('carisma', d.stats.car);
+    }
+
+    if(d.saves){
+        setValue('save_for', d.saves.for);
+        setValue('save_des', d.saves.des);
+        setValue('save_cos', d.saves.cos);
+        setValue('save_int', d.saves.int);
+        setValue('save_sag', d.saves.sag);
+        setValue('save_car', d.saves.car);
+    }
+
+    if(d.skills && typeof d.skills === "object"){
+        setValue('skill_atletica', d.skills.atletica);
+        setValue('skill_acrobazia', d.skills.acrobazia);
+        setValue('skill_rapidita', d.skills.rapidita);
+        setValue('skill_furtivita', d.skills.furtivita);
+        setValue('skill_arcana', d.skills.arcana);
+        setValue('skill_indagare', d.skills.indagare);
+        setValue('skill_natura', d.skills.natura);
+        setValue('skill_religione', d.skills.religione);
+        setValue('skill_storia', d.skills.storia);
+        setValue('skill_addestrare', d.skills.addestrare);
+        setValue('skill_intuizione', d.skills.intuizione);
+        setValue('skill_medicina', d.skills.medicina);
+        setValue('skill_percezione', d.skills.percezione);
+        setValue('skill_sopravvivenza', d.skills.sopravvivenza);
+        setValue('skill_raggirare', d.skills.raggirare);
+        setValue('skill_intimidire', d.skills.intimidire);
+        setValue('skill_intrattenere', d.skills.intrattenere);
+        setValue('skill_persuasione', d.skills.persuasione);
+    }
+
+    setValue('classLevel', d.classLevel);
+    setValue('exp', d.exp);
+    setValue('hp', d.hp);
+    setValue('ac', d.ac);
+    setValue('speed', d.speed);
+    setValue('initiative', d.initiative);
+    setValue('cantrips', d.cantrips);
+    setValue('preparedSpells', d.prepared);
+    setValue('spellSlots', d.slots);
+
+    if(d.attacks && Array.isArray(d.attacks)){
+        for(let i=0;i<4;i++){
+            const atk = d.attacks[i] || {nome:"", txc:"", danni:"", note:""};
+            setValue('atk' + (i+1) + '_nome', atk.nome);
+            setValue('atk' + (i+1) + '_txc', atk.txc);
+            setValue('atk' + (i+1) + '_danni', atk.danni);
+            setValue('atk' + (i+1) + '_note', atk.note);
+        }
+    }
+
+    // Fallback per Excel: chiave = id campo
+    for(const key in d){
+        const el = document.getElementById(key);
+        if(el && typeof d[key] === "string"){
+            el.value = d[key];
+        }
+    }
+}
+</script>
+
+</body>
+</html>
