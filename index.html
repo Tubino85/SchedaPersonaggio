@@ -1,0 +1,4872 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8" />
+  <title>Schede Personaggi D&D</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+  <style>
+  body {
+    margin: 0;
+    font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    background: #f5ecd8;
+    color: #3b2f2f;
+  }
+
+  .shell {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+  }
+
+  header {
+    background: linear-gradient(135deg, #6b4f33, #a67c52);
+    color: #fdf5e6;
+    padding: 1rem 1.5rem;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.25);
+  }
+
+  .header-title {
+    font-size: 1.4rem;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    gap: .75rem;
+  }
+
+  .header-title span.emoji {
+    font-size: 1.8rem;
+  }
+
+  .header-sub {
+    margin-top: .25rem;
+    font-size: .9rem;
+    opacity: .9;
+  }
+
+  main {
+    flex: 1;
+    padding: 1rem;
+    max-width: 1200px;
+    margin: 0 auto;
+    width: 100%;
+  }
+
+  .tabs {
+    display: flex;
+    gap: .5rem;
+    margin-bottom: .75rem;
+    flex-wrap: wrap;
+  }
+
+  .tab-button {
+    border: none;
+    background: #e5d2af;
+    color: #4a3623;
+    padding: .4rem .8rem;
+    border-radius: 999px;
+    font-size: .9rem;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: .35rem;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.2);
+  }
+
+  .tab-button .emoji {
+    font-size: 1.1rem;
+  }
+
+  .tab-button.active {
+    background: #6b4f33;
+    color: #fdf5e6;
+  }
+
+  .tab-button:hover {
+    filter: brightness(1.05);
+  }
+
+  .tab-panel {
+    display: none;
+  }
+
+  .tab-panel.active {
+    display: block;
+  }
+
+  .layout {
+    display: grid;
+    gap: 1rem;
+  }
+
+  @media (min-width: 900px) {
+    .layout {
+      grid-template-columns: minmax(260px, 340px) minmax(0, 1fr);
+    }
+  }
+
+  .card {
+    background: #fefaf0;
+    border-radius: 12px;
+    border: 1px solid #d4c2a1;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    padding: .75rem .9rem;
+  }
+
+  .card-header {
+    font-weight: 600;
+    font-size: 1rem;
+    margin-bottom: .4rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .card-header .title-left {
+    display: flex;
+    align-items: center;
+    gap: .4rem;
+  }
+
+  .card-header small {
+    opacity: .9;
+    font-weight: 400;
+    font-size: .8rem;
+  }
+
+  .card-body {
+    font-size: .88rem;
+  }
+
+  .select-row {
+    display: flex;
+    gap: .5rem;
+    align-items: center;
+    margin-bottom: .4rem;
+  }
+
+  select,
+  input[type="text"],
+  input[type="number"],
+  textarea {
+    width: 100%;
+    font-size: .85rem;
+    padding: .25rem .4rem;
+    border-radius: 8px;
+    border: 1px solid #c2ad86;
+    background: #fffdf8;
+    color: #3b2f2f;
+  }
+
+  select:focus,
+  input:focus,
+  textarea:focus {
+    outline: 2px solid #a67c52;
+    outline-offset: 2px;
+  }
+
+  textarea {
+    min-height: 60px;
+    resize: vertical;
+  }
+
+  .btn {
+    border-radius: 999px;
+    border: none;
+    padding: .25rem .65rem;
+    font-size: .8rem;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: .3rem;
+    white-space: nowrap;
+  }
+
+  .btn.primary {
+    background: #6b4f33;
+    color: #fdf5e6;
+  }
+
+  .btn.secondary {
+    background: #e5d2af;
+    color: #4a3623;
+  }
+
+  .btn.ghost {
+    background: transparent;
+    border: 1px solid #c8b493;
+    color: #4a3623;
+  }
+
+  .btn.tiny {
+    font-size: .7rem;
+    padding: .15rem .4rem;
+  }
+
+  .btn:disabled {
+    opacity: .6;
+    cursor: default;
+  }
+
+  .btn:hover:not(:disabled) {
+    filter: brightness(1.05);
+  }
+
+  .status {
+    font-size: .8rem;
+    color: #6b4f33;
+  }
+
+  .status.muted {
+    opacity: .8;
+  }
+
+  .pill {
+    display: inline-flex;
+    align-items: center;
+    padding: .1rem .45rem;
+    border-radius: 999px;
+    background: #e5d2af;
+    font-size: .7rem;
+    gap: .25rem;
+  }
+
+  .pill .dot {
+    width: .4rem;
+    height: .4rem;
+    border-radius: 999px;
+    background: #6b4f33;
+  }
+
+  .grid {
+    display: grid;
+    gap: .45rem;
+  }
+
+  .grid.two {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .grid.three {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .grid.four {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+
+  .grid.six {
+    grid-template-columns: repeat(6, minmax(0, 1fr));
+  }
+
+  .field {
+    display:flex;
+    flex-direction:column;
+    gap:.1rem;
+  }
+
+  .field label {
+    font-size:.78rem;
+    opacity:.85;
+  }
+
+  .field small {
+    font-size: .7rem;
+    opacity:.8;
+  }
+
+  .stat-grid {
+    display: grid;
+    grid-template-columns: repeat(6, minmax(0, 1fr));
+    gap: .35rem;
+    margin-bottom: .5rem;
+  }
+
+  .stat {
+    display:flex;
+    flex-direction:column;
+    gap:.1rem;
+  }
+
+  .stat span.label {
+    font-size:.76rem;
+    text-transform:uppercase;
+    letter-spacing:.04em;
+    opacity:.8;
+  }
+
+  .stat input {
+    text-align:center;
+  }
+
+  .badge {
+    display:inline-flex;
+    align-items:center;
+    gap:.25rem;
+    padding:.1rem .45rem;
+    border-radius:999px;
+    font-size:.75rem;
+    background:#e9dec9;
+  }
+
+  .badge strong {
+    font-weight:600;
+  }
+
+  .badge .dot {
+    width:.4rem;
+    height:.4rem;
+    border-radius:999px;
+    background:#6b4f33;
+  }
+
+  .avatar-row {
+    display:flex;
+    gap:.5rem;
+    align-items:flex-start;
+  }
+
+  .avatar {
+    width:80px;
+    height:80px;
+    border-radius:12px;
+    background:#e3d3b5;
+    background-size:cover;
+    background-position:center;
+    border:1px solid #c2ad86;
+    flex-shrink:0;
+  }
+
+  .avatar.placeholder {
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    font-size:2rem;
+    color:#85644a;
+  }
+
+  .avatar-info {
+    flex:1;
+    display:flex;
+    flex-direction:column;
+    gap:.2rem;
+  }
+
+  .avatar-info h2 {
+    margin:0;
+    font-size:1.1rem;
+  }
+
+  .avatar-info .meta {
+    font-size:.82rem;
+    opacity:.9;
+  }
+
+  .avatar-info .chips {
+    display:flex;
+    flex-wrap:wrap;
+    gap:.3rem;
+    margin-top:.15rem;
+  }
+
+  .chips .chip {
+    border-radius:999px;
+    background:#f1e2c7;
+    padding:.1rem .4rem;
+    font-size:.7rem;
+  }
+
+  .mini-table {
+    width:100%;
+    border-collapse:collapse;
+    font-size:.8rem;
+  }
+
+  .mini-table th,
+  .mini-table td {
+    border:1px solid #dec9a3;
+    padding:.2rem .25rem;
+  }
+
+  .mini-table th {
+    background:#f0e0c0;
+  }
+
+  .mini-table td input,
+  .mini-table td textarea {
+    font-size:.8rem;
+    padding:.15rem .2rem;
+  }
+
+  .mini-table td textarea {
+    min-height:40px;
+  }
+
+  .section-title {
+    font-weight:600;
+    font-size:.88rem;
+    margin:.5rem 0 .25rem;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+  }
+
+  .section-title small {
+    font-weight:400;
+    font-size:.75rem;
+    opacity:.85;
+  }
+
+  .line {
+    border-top:1px dashed #d4c2a1;
+    margin:.35rem 0;
+  }
+
+  .row {
+    display:flex;
+    gap:.5rem;
+    flex-wrap:wrap;
+  }
+
+  .row.center {
+    align-items:center;
+  }
+
+  .grow {
+    flex:1;
+  }
+
+  .nowrap {
+    white-space:nowrap;
+  }
+
+  .text-right {
+    text-align:right;
+  }
+
+  .mt-sm { margin-top:.35rem; }
+  .mb-sm { margin-bottom:.35rem; }
+  .mb-md { margin-bottom:.5rem; }
+  .mt-md { margin-top:.5rem; }
+
+  .taglist {
+    display:flex;
+    flex-wrap:wrap;
+    gap:.25rem;
+    font-size:.75rem;
+  }
+
+  .tag {
+    padding:.08rem .35rem;
+    border-radius:999px;
+    border:1px solid #c2ad86;
+    background:#fffaf0;
+  }
+
+  .inventory-columns {
+    display:grid;
+    gap:.5rem;
+  }
+
+  @media (min-width:600px) {
+    .inventory-columns {
+      grid-template-columns: 1.2fr .8fr;
+    }
+  }
+
+  .inventory-table {
+    width:100%;
+    border-collapse:collapse;
+    font-size:.8rem;
+  }
+
+  .inventory-table th,
+  .inventory-table td {
+    border:1px solid #dec9a3;
+    padding:.2rem .25rem;
+  }
+
+  .inventory-table th {
+    background:#f0e0c0;
+  }
+
+  .inventory-table td input,
+  .inventory-table td textarea {
+    font-size:.8rem;
+    padding:.15rem .2rem;
+  }
+
+  .inventory-table td textarea {
+    min-height:40px;
+  }
+
+  .basic-grid { display:grid; gap:.45rem; }
+  .basic-grid { grid-template-columns: minmax(0,1fr); }
+
+  @media (min-width:640px) {
+    .basic-grid { grid-template-columns: repeat(2,minmax(0,1fr)); }
+  }
+
+  .stats-grid { grid-template-columns: repeat(3,minmax(0,1fr)); }
+
+  @media (min-width:640px) {
+    .stats-grid { grid-template-columns: repeat(6,minmax(0,1fr)); }
+  }
+
+  .field {
+    display:flex;
+    flex-direction:column;
+    gap:.1rem;
+  }
+
+  .field label {
+    font-size:.8rem;
+    opacity:.85;
+  }
+
+  .field small {
+    font-size:.7rem;
+    opacity:.8;
+  }
+
+  .skill-grid {
+    display:grid;
+    gap:.3rem;
+    grid-template-columns:minmax(0,1fr);
+  }
+  @media (min-width:480px) {
+    .skill-grid { grid-template-columns: repeat(2,minmax(0,1fr)); }
+  }
+  @media (min-width:720px) {
+    .skill-grid { grid-template-columns: repeat(3,minmax(0,1fr)); }
+  }
+
+  .skill-row {
+    display:flex;
+    align-items:center;
+    gap:.35rem;
+  }
+
+  .skill-row span {
+    flex:1;
+    font-size:.8rem;
+  }
+
+  .skill-row input {
+    width:70px;
+    text-align:center;
+  }
+
+  .chip-row {
+    display:flex;
+    flex-wrap:wrap;
+    gap:.25rem;
+  }
+
+  .chip-tag {
+    font-size:.75rem;
+    padding:.1rem .35rem;
+    background:#f1e2c7;
+    border-radius:999px;
+  }
+
+  .hp-section {
+    display:grid;
+    grid-template-columns:repeat(3,minmax(0,1fr));
+    gap:.35rem;
+  }
+
+  .hp-section input {
+    text-align:center;
+  }
+
+  .overlay {
+    position:fixed;
+    inset:0;
+    background:rgba(0,0,0,0.4);
+    display:none;
+    align-items:center;
+    justify-content:center;
+    padding:1rem;
+    z-index:50;
+  }
+  .overlay.active {
+    display:flex;
+  }
+  .overlay-panel {
+    max-width:800px;
+    width:100%;
+    max-height:90vh;
+    background:#fefaf0;
+    border-radius:12px;
+    border:1px solid #d4c2a1;
+    box-shadow:0 10px 25px rgba(0,0,0,0.25);
+    display:flex;
+    flex-direction:column;
+  }
+  .overlay-header {
+    padding:.5rem .75rem;
+    border-bottom:1px solid #dec9a3;
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    gap:.5rem;
+  }
+  .overlay-body {
+    padding:.75rem;
+    overflow:auto;
+    font-size:.85rem;
+  }
+  .overlay-footer {
+    padding:.5rem .75rem;
+    border-top:1px solid #dec9a3;
+    display:flex;
+    gap:.5rem;
+    justify-content:flex-end;
+  }
+  .overlay-close {
+    border:none;
+    background:transparent;
+    cursor:pointer;
+    font-size:1.1rem;
+  }
+
+  .spell-list {
+    border:1px solid #dec9a3;
+    border-radius:8px;
+    overflow:hidden;
+  }
+  .spell-list-header {
+    padding:.35rem .5rem;
+    background:#f0e0c0;
+    font-size:.78rem;
+    display:flex;
+    gap:.5rem;
+    align-items:center;
+    justify-content:space-between;
+  }
+  .spell-list-body {
+    max-height:350px;
+    overflow:auto;
+  }
+  .spell-row {
+    display:flex;
+    gap:.4rem;
+    align-items:flex-start;
+    padding:.3rem .45rem;
+    border-top:1px solid #f1e2c7;
+  }
+  .spell-row:hover {
+    background:#f9f0dd;
+  }
+  .spell-main {
+    flex:1;
+  }
+  .spell-main .spell-name {
+    font-weight:600;
+    font-size:.85rem;
+  }
+  .spell-main .spell-meta {
+    font-size:.75rem;
+    opacity:.9;
+  }
+  .spell-main .spell-desc {
+    font-size:.78rem;
+    margin-top:.2rem;
+  }
+  .spell-row .spell-act {
+    display:flex;
+    align-items:center;
+  }
+  .spell-row .spell-act input[type=checkbox] {
+    width:1rem;
+    height:1rem;
+  }
+  .pill-xs {
+    display:inline-flex;
+    align-items:center;
+    padding:.05rem .3rem;
+    border-radius:999px;
+    background:#e5d2af;
+    font-size:.7rem;
+    margin-right:.2rem;
+  }
+
+  .class-abilities-grid {
+    display:grid;
+    gap:.5rem;
+  }
+  @media (min-width:600px) {
+    .class-abilities-grid {
+      grid-template-columns:repeat(2, minmax(0,1fr));
+    }
+  }
+  .class-card {
+    border:1px solid #dec9a3;
+    border-radius:8px;
+    background:#fffaf0;
+    padding:.5rem .6rem;
+    font-size:.85rem;
+  }
+  .class-card-header {
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    gap:.4rem;
+    margin-bottom:.25rem;
+  }
+  .class-card-title {
+    font-weight:600;
+    font-size:.9rem;
+  }
+  .class-card-body {
+    font-size:.82rem;
+  }
+  .class-card-tags {
+    display:flex;
+    flex-wrap:wrap;
+    gap:.2rem;
+    margin-top:.25rem;
+  }
+  .class-card-tags .tag {
+    font-size:.7rem;
+    padding:.05rem .3rem;
+  }
+
+  </style>
+</head>
+<body>
+  <div class="shell">
+    <header>
+      <div class="header-title">
+        <span class="emoji">📜</span>
+        <span>Schede Personaggi D&D</span>
+      </div>
+      <div class="header-sub">
+        Gestione personaggi, incantesimi e inventario per la campagna.
+      </div>
+    </header>
+
+    <main>
+      <div class="tabs">
+        <button class="tab-button active" data-tab="characters">
+          <span class="emoji">🧙‍♂️</span><span>Personaggi</span>
+        </button>
+        <button class="tab-button" data-tab="library">
+          <span class="emoji">📚</span><span>Libreria Magie/Abilità</span>
+        </button>
+        <button class="tab-button" data-tab="class-abilities">
+          <span class="emoji">🎖️</span><span>Abilità di Classe</span>
+        </button>
+      </div>
+
+      <!-- TAB PERSONAGGI -->
+      <section class="tab-panel active" id="tab-characters">
+        <div class="layout">
+          <!-- Colonna sinistra: selettore + info generali -->
+          <div class="card">
+            <div class="card-header">
+              <div class="title-left">
+                <span>Personaggi</span>
+              </div>
+              <div class="row">
+                <button class="btn ghost tiny" id="exportAllCharsBtn" title="Scarica JSON di tutti i personaggi">
+                  ⬇ JSON PG
+                </button>
+              </div>
+            </div>
+            <div class="card-body">
+              <div class="select-row">
+                <select id="characterSelect"></select>
+              </div>
+              <p class="status">
+                Carica automaticamente i PG da <code>pg_sessione4_all.json</code> (se presente nella repo),
+                oppure importa un file JSON/Excel personalizzato.
+              </p>
+              <div class="mt-sm mb-sm">
+                <input type="file" id="charactersFileInput" accept=".json,.xlsx,.xls" style="width:100%;" />
+              </div>
+              <p class="status muted">
+                JSON supportati: array di PG, <code>{ "characters": [...] }</code> o <code>{ "pg": [...] }</code>.
+              </p>
+            </div>
+          </div>
+
+          <!-- Colonna destra: dettagli personaggio -->
+          <div class="card">
+            <div class="card-header">
+              <div class="title-left">
+                <span>Dettaglio Personaggio</span>
+              </div>
+              <div class="row">
+                <button class="btn secondary tiny" id="exportCharacterBtn" title="Esporta questo PG in JSON">
+                  ⬇ Questo PG
+                </button>
+              </div>
+            </div>
+            <div class="card-body" id="characterDetail">
+              <!-- Contenuto generato da JS -->
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- TAB LIBRERIA -->
+      <section class="tab-panel" id="tab-library">
+        <div class="card">
+          <div class="card-header">
+            <div class="title-left">
+              <span>Libreria Magie / Abilità</span>
+            </div>
+            <div class="row">
+              <span class="status" id="libraryStatus"></span>
+            </div>
+          </div>
+          <div class="card-body">
+            <div class="basic-grid">
+              <div class="field">
+                <label>Tipo</label>
+                <select id="filterTipo">
+                  <option value="">Tutti</option>
+                  <option value="incantesimo">Incantesimi</option>
+                  <option value="abilita">Abilità</option>
+                </select>
+              </div>
+              <div class="field">
+                <label>Classe</label>
+                <select id="filterClasse">
+                  <option value="">Tutte</option>
+                  <option value="Mago">Mago</option>
+                  <option value="Druido">Druido</option>
+                  <option value="Chierico">Chierico</option>
+                  <option value="Ladro">Ladro</option>
+                </select>
+              </div>
+              <div class="field">
+                <label>Livello</label>
+                <select id="filterLivello">
+                  <option value="">Tutti</option>
+                  <option value="0">Trucchetti</option>
+                  <option value="1">1° livello</option>
+                  <option value="2">2° livello</option>
+                  <option value="3">3° livello</option>
+                  <option value="4">4° livello</option>
+                  <option value="5">5° livello</option>
+                  <option value="6">6° livello</option>
+                  <option value="7">7° livello</option>
+                  <option value="8">8° livello</option>
+                  <option value="9">9° livello</option>
+                </select>
+              </div>
+              <div class="field">
+                <label>Cerca per nome/testo</label>
+                <input type="text" id="filterSearch" placeholder="Cerca in nome e descrizione..." />
+              </div>
+            </div>
+
+            <div class="line"></div>
+
+            <div id="libraryList">
+              <!-- Lista magie/abilità -->
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- TAB ABILITÀ DI CLASSE -->
+      <section class="tab-panel" id="tab-class-abilities">
+        <div class="card">
+          <div class="card-header">
+            <div class="title-left">
+              <span>Abilità di Classe / Sottoclasse</span>
+            </div>
+            <div class="row">
+              <span class="status">Mostra le abilità già sbloccate dai personaggi in base a classe/sottoclasse e livello.</span>
+            </div>
+          </div>
+          <div class="card-body">
+            <div id="classAbilitiesContent">
+              <!-- Riempito da JS -->
+            </div>
+          </div>
+        </div>
+      </section>
+
+    </main>
+  </div>
+
+  <!-- Overlay Gestore Incantesimi -->
+  <div class="overlay" id="spellManagerOverlay"></div>
+
+  <script>
+    let libraryItems = [
+      {
+    "tipo": "incantesimo",
+    "classe": "Mago",
+    "livello": 0,
+    "nome": "Spruzzo Acido (Acid Splash)",
+    "txc_o_ts": "TS DES",
+    "danni": "1d6 acido (cantrip, scala)",
+    "effetto": "Colpisce 1–2 creature vicine con schizzi di acido."
+  },
+  {
+    "tipo": "incantesimo",
+    "classe": "Mago",
+    "livello": 0,
+    "nome": "Tocco Gelido (Chill Touch)",
+    "txc_o_ts": "TxC incantesimo a distanza",
+    "danni": "1d8 necrotico (cantrip, scala)",
+    "effetto": "Mano spettrale che danneggia e impedisce la guarigione."
+  },
+  {
+    "tipo": "incantesimo",
+    "classe": "Mago",
+    "livello": 0,
+    "nome": "Dardo di Fuoco (Fire Bolt)",
+    "txc_o_ts": "TxC incantesimo a distanza",
+    "danni": "1d10 fuoco (cantrip, scala)",
+    "effetto": "Raggio di fuoco a distanza, può incendiare oggetti."
+  },
+  {
+    "tipo": "incantesimo",
+    "classe": "Mago",
+    "livello": 0,
+    "nome": "Spruzzo Velenoso (Poison Spray)",
+    "txc_o_ts": "TS COS",
+    "danni": "1d12 veleno (cantrip, scala)",
+    "effetto": "Nube di veleno a corto raggio."
+  },
+  {
+    "tipo": "incantesimo",
+    "classe": "Mago",
+    "livello": 0,
+    "nome": "Raggio di Gelo (Ray of Frost)",
+    "txc_o_ts": "TxC incantesimo a distanza",
+    "danni": "1d8 freddo (cantrip, scala)",
+    "effetto": "Danni da freddo e rallenta il bersaglio."
+  },
+  {
+    "tipo": "incantesimo",
+    "classe": "Mago",
+    "livello": 0,
+    "nome": "Tocco Folgorante (Shocking Grasp)",
+    "txc_o_ts": "TxC incantesimo in mischia",
+    "danni": "1d8 fulmine (cantrip, scala)",
+    "effetto": "Danni elettrici, il bersaglio non può fare reazioni."
+  },
+  {
+    "tipo": "incantesimo",
+    "classe": "Mago",
+    "livello": 0,
+    "nome": "Luci Danzanti (Dancing Lights)",
+    "txc_o_ts": "-",
+    "danni": "-",
+    "effetto": "Crea e muove piccole luci fluttuanti."
+  },
+  {
+    "tipo": "incantesimo",
+    "classe": "Mago",
+    "livello": 0,
+    "nome": "Luce (Light)",
+    "txc_o_ts": "-",
+    "danni": "-",
+    "effetto": "Un oggetto brilla come una torcia."
+  },
+  {
+    "tipo": "incantesimo",
+    "classe": "Mago",
+    "livello": 0,
+    "nome": "Mano Magica (Mage Hand)",
+    "txc_o_ts": "-",
+    "danni": "-",
+    "effetto": "Mano spettrale che manipola oggetti a distanza."
+  },
+  {
+    "tipo": "incantesimo",
+    "classe": "Mago",
+    "livello": 0,
+    "nome": "Riparare (Mending)",
+    "txc_o_ts": "-",
+    "danni": "-",
+    "effetto": "Ripara piccoli oggetti o rotture."
+  },
+  {
+    "tipo": "incantesimo",
+    "classe": "Mago",
+    "livello": 0,
+    "nome": "Messaggio (Message)",
+    "txc_o_ts": "-",
+    "danni": "-",
+    "effetto": "Sussurri un breve messaggio a distanza e ricevi risposta."
+  },
+  {
+    "tipo": "incantesimo",
+    "classe": "Mago",
+    "livello": 0,
+    "nome": "Illusione Minore (Minor Illusion)",
+    "txc_o_ts": "-",
+    "danni": "-",
+    "effetto": "Piccola illusione visiva o sonora statica."
+  },
+  {
+    "tipo": "incantesimo",
+    "classe": "Mago",
+    "livello": 0,
+    "nome": "Prestidigitazione (Prestidigitation)",
+    "txc_o_ts": "-",
+    "danni": "-",
+    "effetto": "Piccoli trucchi magici versatili."
+  },
+  {
+    "tipo": "incantesimo",
+    "classe": "Mago",
+    "livello": 0,
+    "nome": "Vero Colpo (True Strike)",
+    "txc_o_ts": "-",
+    "danni": "-",
+    "effetto": "Vantaggio al prossimo attacco contro un bersaglio."
+  },
+  {
+    "tipo": "incantesimo",
+    "classe": "Mago",
+    "livello": 1,
+    "nome": "Allarme (Alarm)",
+    "txc_o_ts": "-",
+    "danni": "-",
+    "effetto": "Allarme magico su un’area o porta che ti avvisa se qualcuno entra."
+  },
+  {
+    "tipo": "incantesimo",
+    "classe": "Mago",
+    "livello": 1,
+    "nome": "Mani Brucianti (Burning Hands)",
+    "txc_o_ts": "TS DES",
+    "danni": "3d6 fuoco (½ se TS riuscito)",
+    "effetto": "Cono di fuoco ravvicinato."
+  },
+  {
+    "tipo": "incantesimo",
+    "classe": "Mago",
+    "livello": 1,
+    "nome": "Ammaliare Persona (Charm Person)",
+    "txc_o_ts": "TS SAG",
+    "danni": "-",
+    "effetto": "Tenta di rendere un umanoide amichevole."
+  },
+  {
+    "tipo": "incantesimo",
+    "classe": "Mago",
+    "livello": 1,
+    "nome": "Spruzzo di Colori (Color Spray)",
+    "txc_o_ts": "-",
+    "danni": "-",
+    "effetto": "Cono di luci che può accecare creature con pochi PF."
+  },
+  {
+    "tipo": "incantesimo",
+    "classe": "Mago",
+    "livello": 1,
+    "nome": "Comprensione dei Linguaggi (Comprehend Languages)",
+    "txc_o_ts": "-",
+    "danni": "-",
+    "effetto": "Capisci lingue parlate o scritte."
+  },
+  {
+    "tipo": "incantesimo",
+    "classe": "Mago",
+    "livello": 1,
+    "nome": "Individuazione del Magico (Detect Magic)",
+    "txc_o_ts": "-",
+    "danni": "-",
+    "effetto": "Percepisci aure e fonti di magia."
+  },
+  {
+    "tipo": "incantesimo",
+    "classe": "Mago",
+    "livello": 1,
+    "nome": "Travestimento (Disguise Self)",
+    "txc_o_ts": "-",
+    "danni": "-",
+    "effetto": "Cambi illusoriamente il tuo aspetto."
+  },
+  {
+    "tipo": "incantesimo",
+    "classe": "Mago",
+    "livello": 1,
+    "nome": "Ritirata Rapida (Expeditious Retreat)",
+    "txc_o_ts": "-",
+    "danni": "-",
+    "effetto": "Ti permette di fare Scatto come azione bonus."
+  },
+  {
+    "tipo": "incantesimo",
+    "classe": "Mago",
+    "livello": 1,
+    "nome": "Falsa Vita (False Life)",
+    "txc_o_ts": "-",
+    "danni": "1d4+4 PF temporanei",
+    "effetto": "Ottieni punti ferita temporanei."
+  },
+  {
+    "tipo": "incantesimo",
+    "classe": "Mago",
+    "livello": 1,
+    "nome": "Caduta Morbida (Feather Fall)",
+    "txc_o_ts": "-",
+    "danni": "-",
+    "effetto": "Rallenta la caduta fino a non subire danni."
+  },
+  {
+    "tipo": "incantesimo",
+    "classe": "Mago",
+    "livello": 1,
+    "nome": "Trova Famiglio (Find Familiar)",
+    "txc_o_ts": "-",
+    "danni": "-",
+    "effetto": "Evoca un famiglio che ti assiste."
+  },
+  {
+    "tipo": "incantesimo",
+    "classe": "Mago",
+    "livello": 1,
+    "nome": "Disco Fluttuante (Floating Disk)",
+    "txc_o_ts": "-",
+    "danni": "-",
+    "effetto": "Disco che trasporta carichi e ti segue."
+  },
+  {
+    "tipo": "incantesimo",
+    "classe": "Mago",
+    "livello": 1,
+    "nome": "Nube di Nebbia (Fog Cloud)",
+    "txc_o_ts": "-",
+    "danni": "-",
+    "effetto": "Nube di nebbia che oscura la vista."
+  },
+  {
+    "tipo": "incantesimo",
+    "classe": "Mago",
+    "livello": 1,
+    "nome": "Unto (Grease)",
+    "txc_o_ts": "TS DES",
+    "danni": "-",
+    "effetto": "Area scivolosa, chi fallisce il TS cade prono."
+  },
+  {
+    "tipo": "incantesimo",
+    "classe": "Mago",
+    "livello": 1,
+    "nome": "Risata Incontenibile di Tasha (Tasha's Hideous Laughter)",
+    "txc_o_ts": "TS SAG",
+    "danni": "-",
+    "effetto": "Una creatura cade prono ridendo, incapacitata."
+  },
+  {
+    "tipo": "incantesimo",
+    "classe": "Mago",
+    "livello": 1,
+    "nome": "Identificare (Identify)",
+    "txc_o_ts": "-",
+    "danni": "-",
+    "effetto": "Rivela proprietà magiche di oggetti o incantesimi."
+  },
+  {
+    "tipo": "incantesimo",
+    "classe": "Mago",
+    "livello": 1,
+    "nome": "Scrittura Illusoria (Illusory Script)",
+    "txc_o_ts": "-",
+    "danni": "-",
+    "effetto": "Messaggio leggibile solo da chi decidi tu."
+  },
+  {
+    "tipo": "incantesimo",
+    "classe": "Mago",
+    "livello": 1,
+    "nome": "Salto (Jump)",
+    "txc_o_ts": "-",
+    "danni": "-",
+    "effetto": "Triplica la distanza di salto."
+  },
+  {
+    "tipo": "incantesimo",
+    "classe": "Mago",
+    "livello": 1,
+    "nome": "Passo Lungo (Longstrider)",
+    "txc_o_ts": "-",
+    "danni": "-",
+    "effetto": "Aumenta la velocità di circa 3 m."
+  },
+  {
+    "tipo": "incantesimo",
+    "classe": "Mago",
+    "livello": 1,
+    "nome": "Armatura Magica (Mage Armor)",
+    "txc_o_ts": "-",
+    "danni": "-",
+    "effetto": "Imposta la CA base a 13 + Des per una creatura non corazzata."
+  },
+  {
+    "tipo": "incantesimo",
+    "classe": "Mago",
+    "livello": 1,
+    "nome": "Dardo Incantato (Magic Missile)",
+    "txc_o_ts": "-",
+    "danni": "3×(1d4+1) forza",
+    "effetto": "Dardi che colpiscono automaticamente."
+  },
+  {
+    "tipo": "incantesimo",
+    "classe": "Mago",
+    "livello": 1,
+    "nome": "Protezione dal Bene e dal Male (Protection from Evil and Good)",
+    "txc_o_ts": "-",
+    "danni": "-",
+    "effetto": "Bonus difensivi contro varie creature extraplanari e non morti."
+  },
+  {
+    "tipo": "incantesimo",
+    "classe": "Mago",
+    "livello": 1,
+    "nome": "Scudo (Shield)",
+    "txc_o_ts": "-",
+    "danni": "-",
+    "effetto": "+5 CA fino al tuo prossimo turno come reazione."
+  },
+  {
+    "tipo": "incantesimo",
+    "classe": "Mago",
+    "livello": 1,
+    "nome": "Immagine Silenziosa (Silent Image)",
+    "txc_o_ts": "-",
+    "danni": "-",
+    "effetto": "Illusione visiva mobile senza suono."
+  },
+  {
+    "tipo": "incantesimo",
+    "classe": "Mago",
+    "livello": 1,
+    "nome": "Sonno (Sleep)",
+    "txc_o_ts": "-",
+    "danni": "-",
+    "effetto": "Addormenta creature fino a un totale di 5d8 PF."
+  },
+  {
+    "tipo": "incantesimo",
+    "classe": "Mago",
+    "livello": 1,
+    "nome": "Onda Tonante (Thunderwave)",
+    "txc_o_ts": "TS COS",
+    "danni": "2d8 tuono (½ se TS riuscito)",
+    "effetto": "Esplosione sonora che danneggia e spinge via."
+  },
+  {
+    "tipo": "incantesimo",
+    "classe": "Mago",
+    "livello": 1,
+    "nome": "Servo Inviso (Unseen Servant)",
+    "txc_o_ts": "-",
+    "danni": "-",
+    "effetto": "Servitore invisibile che esegue semplici compiti."
+  },
+  {
+    "tipo": "incantesimo",
+    "classe": "Mago",
+    "livello": 2,
+    "nome": "Freccia Acida (Melf’s Acid Arrow)",
+    "txc_o_ts": "TxC incantesimo a distanza",
+    "danni": "4d4 acido + 2d4 a fine turno",
+    "effetto": "Freccia di acido che continua a corrodere."
+  },
+  {
+    "tipo": "incantesimo",
+    "classe": "Mago",
+    "livello": 2,
+    "nome": "Alterare Se Stessi (Alter Self)",
+    "txc_o_ts": "TS COS (se non consenziente)",
+    "danni": "Vedi arma",
+    "effetto": "Modifica aspetto o forma, può dare armi naturali."
+  },
+  {
+    "tipo": "incantesimo",
+    "classe": "Mago",
+    "livello": 2,
+    "nome": "Chiusura Arcana (Arcane Lock)",
+    "txc_o_ts": "-",
+    "danni": "-",
+    "effetto": "Rende una chiusura molto più difficile da aprire."
+  },
+  {
+    "tipo": "incantesimo",
+    "classe": "Mago",
+    "livello": 2,
+    "nome": "Aura Magica di Nystul (Magic Aura)",
+    "txc_o_ts": "-",
+    "danni": "-",
+    "effetto": "Maschera o altera l’aura magica di oggetti o creature."
+  },
+  {
+    "tipo": "incantesimo",
+    "classe": "Mago",
+    "livello": 2,
+    "nome": "Cecità/Sordità (Blindness/Deafness)",
+    "txc_o_ts": "TS COS",
+    "danni": "-",
+    "effetto": "Rende una creatura cieca o sorda."
+  },
+  {
+    "tipo": "incantesimo",
+    "classe": "Mago",
+    "livello": 2,
+    "nome": "Sfocatura (Blur)",
+    "txc_o_ts": "-",
+    "danni": "-",
+    "effetto": "Dà svantaggio agli attacchi contro di te."
+  },
+  {
+    "tipo": "incantesimo",
+    "classe": "Mago",
+    "livello": 2,
+    "nome": "Fiamma Persistente (Continual Flame)",
+    "txc_o_ts": "-",
+    "danni": "-",
+    "effetto": "Fiamma magica eterna che non consuma."
+  },
+  {
+    "tipo": "incantesimo",
+    "classe": "Mago",
+    "livello": 2,
+    "nome": "Oscurità (Darkness)",
+    "txc_o_ts": "-",
+    "danni": "-",
+    "effetto": "Sfera di oscurità magica."
+  },
+  {
+    "tipo": "incantesimo",
+    "classe": "Mago",
+    "livello": 2,
+    "nome": "Scurovisione (Darkvision)",
+    "txc_o_ts": "-",
+    "danni": "-",
+    "effetto": "Conferisce scurovisione per ore."
+  },
+  {
+    "tipo": "incantesimo",
+    "classe": "Mago",
+    "livello": 2,
+    "nome": "Individuazione dei Pensieri (Detect Thoughts)",
+    "txc_o_ts": "TS SAG (se scavi)",
+    "danni": "-",
+    "effetto": "Leggi pensieri superficiali e, se forzi, quelli profondi."
+  },
+  {
+    "tipo": "incantesimo",
+    "classe": "Mago",
+    "livello": 2,
+    "nome": "Ingrandire/Ridurre (Enlarge/Reduce)",
+    "txc_o_ts": "TS COS (se non consenziente)",
+    "danni": "Vedi arma",
+    "effetto": "Aumenta o riduce taglia e danni da arma."
+  },
+  {
+    "tipo": "incantesimo",
+    "classe": "Mago",
+    "livello": 2,
+    "nome": "Sfera Fiammeggiante (Flaming Sphere)",
+    "txc_o_ts": "TS DES",
+    "danni": "2d6 fuoco (½ se TS riuscito)",
+    "effetto": "Sfera di fuoco mobile che brucia i nemici."
+  },
+  {
+    "tipo": "incantesimo",
+    "classe": "Mago",
+    "livello": 2,
+    "nome": "Riposo Tranquillo (Gentle Repose)",
+    "txc_o_ts": "-",
+    "danni": "-",
+    "effetto": "Preserva un cadavere e ne blocca l’animazione."
+  },
+  {
+    "tipo": "incantesimo",
+    "classe": "Mago",
+    "livello": 2,
+    "nome": "Soffio di Vento (Gust of Wind)",
+    "txc_o_ts": "TS FOR",
+    "danni": "-",
+    "effetto": "Colonna di vento che spinge e disperde gas."
+  },
+  {
+    "tipo": "incantesimo",
+    "classe": "Mago",
+    "livello": 2,
+    "nome": "Blocca Persone (Hold Person)",
+    "txc_o_ts": "TS SAG",
+    "danni": "-",
+    "effetto": "Paralizza un umanoide."
+  },
+  {
+    "tipo": "incantesimo",
+    "classe": "Mago",
+    "livello": 2,
+    "nome": "Invisibilità (Invisibility)",
+    "txc_o_ts": "-",
+    "danni": "-",
+    "effetto": "Rende invisibile una creatura finché non agisce ostilmente."
+  },
+  {
+    "tipo": "incantesimo",
+    "classe": "Mago",
+    "livello": 2,
+    "nome": "Scassinare (Knock)",
+    "txc_o_ts": "-",
+    "danni": "-",
+    "effetto": "Apre serrature e chiusure."
+  },
+  {
+    "tipo": "incantesimo",
+    "classe": "Mago",
+    "livello": 2,
+    "nome": "Levitare (Levitate)",
+    "txc_o_ts": "TS COS (se non consenziente)",
+    "danni": "-",
+    "effetto": "Fa fluttuare una creatura o un oggetto su e giù."
+  },
+  {
+    "tipo": "incantesimo",
+    "classe": "Mago",
+    "livello": 2,
+    "nome": "Localizzare Oggetto (Locate Object)",
+    "txc_o_ts": "-",
+    "danni": "-",
+    "effetto": "Indica la direzione di un oggetto noto."
+  },
+  {
+    "tipo": "incantesimo",
+    "classe": "Mago",
+    "livello": 2,
+    "nome": "Bocca Magica (Magic Mouth)",
+    "txc_o_ts": "-",
+    "danni": "-",
+    "effetto": "Messaggio registrato che si attiva a una condizione."
+  },
+  {
+    "tipo": "incantesimo",
+    "classe": "Mago",
+    "livello": 2,
+    "nome": "Arma Magica (Magic Weapon)",
+    "txc_o_ts": "-",
+    "danni": "-",
+    "effetto": "Rende un’arma magica con bonus a TxC e danni."
+  },
+  {
+    "tipo": "incantesimo",
+    "classe": "Mago",
+    "livello": 2,
+    "nome": "Immagine Speculare (Mirror Image)",
+    "txc_o_ts": "-",
+    "danni": "-",
+    "effetto": "Crea copie illusorie che possono far mancare gli attacchi."
+  },
+  {
+    "tipo": "incantesimo",
+    "classe": "Mago",
+    "livello": 2,
+    "nome": "Passo Velato (Misty Step)",
+    "txc_o_ts": "-",
+    "danni": "-",
+    "effetto": "Breve teletrasporto come azione bonus."
+  },
+  {
+    "tipo": "incantesimo",
+    "classe": "Mago",
+    "livello": 2,
+    "nome": "Raggio d’Indebolimento (Ray of Enfeeblement)",
+    "txc_o_ts": "TxC incantesimo a distanza",
+    "danni": "-",
+    "effetto": "Dimezza i danni da forza fisica del bersaglio."
+  },
+  {
+    "tipo": "incantesimo",
+    "classe": "Mago",
+    "livello": 2,
+    "nome": "Trucco della Corda (Rope Trick)",
+    "txc_o_ts": "-",
+    "danni": "-",
+    "effetto": "Rifugio extradimensionale in cima a una corda."
+  },
+  {
+    "tipo": "incantesimo",
+    "classe": "Mago",
+    "livello": 2,
+    "nome": "Raggio Rovente (Scorching Ray)",
+    "txc_o_ts": "TxC incantesimo a distanza",
+    "danni": "3×(2d6 fuoco)",
+    "effetto": "Tre raggi di fuoco distribuibili."
+  },
+  {
+    "tipo": "incantesimo",
+    "classe": "Mago",
+    "livello": 2,
+    "nome": "Vedere l’Invisibilità (See Invisibility)",
+    "txc_o_ts": "-",
+    "danni": "-",
+    "effetto": "Permette di vedere invisibili e Piano Etereo."
+  },
+  {
+    "tipo": "incantesimo",
+    "classe": "Mago",
+    "livello": 2,
+    "nome": "Frantumare (Shatter)",
+    "txc_o_ts": "TS COS",
+    "danni": "3d8 tuono (½ se TS riuscito)",
+    "effetto": "Esplosione sonora che danneggia anche oggetti e metallo."
+  },
+  {
+    "tipo": "incantesimo",
+    "classe": "Mago",
+    "livello": 2,
+    "nome": "Camminare sui Muri (Spider Climb)",
+    "txc_o_ts": "-",
+    "danni": "-",
+    "effetto": "Permette di camminare su pareti e soffitti."
+  },
+  {
+    "tipo": "incantesimo",
+    "classe": "Mago",
+    "livello": 2,
+    "nome": "Suggestione (Suggestion)",
+    "txc_o_ts": "TS SAG",
+    "danni": "-",
+    "effetto": "Impianti un comando ragionevole nella mente di una creatura."
+  },
+  {
+    "tipo": "incantesimo",
+    "classe": "Mago",
+    "livello": 2,
+    "nome": "Ragnatela (Web)",
+    "txc_o_ts": "TS DES",
+    "danni": "2d4 fuoco se incendiata",
+    "effetto": "Area di ragnatele che intrappolano; se date fuoco fanno danni."
+  },
+  {
+    "tipo": "incantesimo",
+    "classe": "Mago",
+    "livello": 3,
+    "nome": "Animare Morti (Animate Dead)",
+    "txc_o_ts": "-",
+    "danni": "-",
+    "effetto": "Rialza scheletri o zombie come servitori."
+  },
+  {
+    "tipo": "incantesimo",
+    "classe": "Mago",
+    "livello": 3,
+    "nome": "Infliggi Maledizione (Bestow Curse)",
+    "txc_o_ts": "TS SAG",
+    "danni": "-",
+    "effetto": "Applica una maledizione personalizzabile a un bersaglio."
+  },
+  {
+    "tipo": "incantesimo",
+    "classe": "Mago",
+    "livello": 3,
+    "nome": "Scintillare (Blink)",
+    "txc_o_ts": "-",
+    "danni": "-",
+    "effetto": "A intervalli sparisci sul Piano Etereo, difficile colpirti."
+  },
+  {
+    "tipo": "incantesimo",
+    "classe": "Mago",
+    "livello": 3,
+    "nome": "Chiaroveggenza (Clairvoyance)",
+    "txc_o_ts": "-",
+    "danni": "-",
+    "effetto": "Vedi o senti a distanza da un punto scelto."
+  },
+  {
+    "tipo": "incantesimo",
+    "classe": "Mago",
+    "livello": 3,
+    "nome": "Controincantesimo (Counterspell)",
+    "txc_o_ts": "-",
+    "danni": "-",
+    "effetto": "Interrompe il lancio di un incantesimo."
+  },
+  {
+    "tipo": "incantesimo",
+    "classe": "Mago",
+    "livello": 3,
+    "nome": "Dissolvi Magie (Dispel Magic)",
+    "txc_o_ts": "-",
+    "danni": "-",
+    "effetto": "Annulla magie ed effetti magici."
+  },
+  {
+    "tipo": "incantesimo",
+    "classe": "Mago",
+    "livello": 3,
+    "nome": "Paura (Fear)",
+    "txc_o_ts": "TS SAG",
+    "danni": "-",
+    "effetto": "Cono che induce terrore e fa fuggire."
+  },
+  {
+    "tipo": "incantesimo",
+    "classe": "Mago",
+    "livello": 3,
+    "nome": "Palla di Fuoco (Fireball)",
+    "txc_o_ts": "TS DES",
+    "danni": "8d6 fuoco (½ se TS riuscito)",
+    "effetto": "Esplosione di fuoco ad area ampia."
+  },
+  {
+    "tipo": "incantesimo",
+    "classe": "Mago",
+    "livello": 3,
+    "nome": "Volare (Fly)",
+    "txc_o_ts": "-",
+    "danni": "-",
+    "effetto": "Conferisce velocità di volo a una creatura."
+  },
+  {
+    "tipo": "incantesimo",
+    "classe": "Mago",
+    "livello": 3,
+    "nome": "Forma Gassosa (Gaseous Form)",
+    "txc_o_ts": "-",
+    "danni": "-",
+    "effetto": "Trasforma una creatura in nube gassosa."
+  },
+  {
+    "tipo": "incantesimo",
+    "classe": "Mago",
+    "livello": 3,
+    "nome": "Glifo di Interdizione (Glyph of Warding)",
+    "txc_o_ts": "TS DES o TS incantesimo",
+    "danni": "5d8 danni o incantesimo legato",
+    "effetto": "Sigillo trappola che esplode o rilascia magia."
+  },
+  {
+    "tipo": "incantesimo",
+    "classe": "Mago",
+    "livello": 3,
+    "nome": "Velocità (Haste)",
+    "txc_o_ts": "TS COS (se non consenziente)",
+    "danni": "-",
+    "effetto": "Aumenta velocità, CA e dà un’azione aggiuntiva."
+  },
+  {
+    "tipo": "incantesimo",
+    "classe": "Mago",
+    "livello": 3,
+    "nome": "Trama Ipnotica (Hypnotic Pattern)",
+    "txc_o_ts": "TS SAG",
+    "danni": "-",
+    "effetto": "Pattern di luci che affascina e immobilizza."
+  },
+  {
+    "tipo": "incantesimo",
+    "classe": "Mago",
+    "livello": 3,
+    "nome": "Dardo Fulminante (Lightning Bolt)",
+    "txc_o_ts": "TS DES",
+    "danni": "8d6 fulmine (½ se TS riuscito)",
+    "effetto": "Linea di fulmine che danneggia chi è sul percorso."
+  },
+  {
+    "tipo": "incantesimo",
+    "classe": "Mago",
+    "livello": 3,
+    "nome": "Cerchio Magico (Magic Circle)",
+    "txc_o_ts": "-",
+    "danni": "-",
+    "effetto": "Cerchio che imprigiona o respinge certe creature."
+  },
+  {
+    "tipo": "incantesimo",
+    "classe": "Mago",
+    "livello": 3,
+    "nome": "Immagine Maggiore (Major Image)",
+    "txc_o_ts": "-",
+    "danni": "-",
+    "effetto": "Illusione realistica con suono e movimento."
+  },
+  {
+    "tipo": "incantesimo",
+    "classe": "Mago",
+    "livello": 3,
+    "nome": "Non Rilevabile (Nondetection)",
+    "txc_o_ts": "-",
+    "danni": "-",
+    "effetto": "Protegge da scrutamenti e divinazioni."
+  },
+  {
+    "tipo": "incantesimo",
+    "classe": "Mago",
+    "livello": 3,
+    "nome": "Destriero Fantomatico (Phantom Steed)",
+    "txc_o_ts": "-",
+    "danni": "-",
+    "effetto": "Cavalcatura magica veloce."
+  },
+  {
+    "tipo": "incantesimo",
+    "classe": "Mago",
+    "livello": 3,
+    "nome": "Protezione dall’Energia (Protection from Energy)",
+    "txc_o_ts": "-",
+    "danni": "-",
+    "effetto": "Resistenza a un tipo di danno energetico."
+  },
+  {
+    "tipo": "incantesimo",
+    "classe": "Mago",
+    "livello": 3,
+    "nome": "Rimuovi Maledizione (Remove Curse)",
+    "txc_o_ts": "-",
+    "danni": "-",
+    "effetto": "Rimuove maledizioni e oggetti maledetti."
+  },
+  {
+    "tipo": "incantesimo",
+    "classe": "Mago",
+    "livello": 3,
+    "nome": "Invio (Sending)",
+    "txc_o_ts": "-",
+    "danni": "-",
+    "effetto": "Messaggio mentale istantaneo anche tra piani."
+  },
+  {
+    "tipo": "incantesimo",
+    "classe": "Mago",
+    "livello": 3,
+    "nome": "Tempesta Gelata (Sleet Storm)",
+    "txc_o_ts": "-",
+    "danni": "-",
+    "effetto": "Tempesta che rende il terreno scivoloso e oscura la vista."
+  },
+  {
+    "tipo": "incantesimo",
+    "classe": "Mago",
+    "livello": 3,
+    "nome": "Rallentare (Slow)",
+    "txc_o_ts": "TS SAG",
+    "danni": "-",
+    "effetto": "Riduce azioni, CA e movimento di più creature."
+  },
+  {
+    "tipo": "incantesimo",
+    "classe": "Mago",
+    "livello": 3,
+    "nome": "Nube Maleodorante (Stinking Cloud)",
+    "txc_o_ts": "TS COS",
+    "danni": "-",
+    "effetto": "Nube che fa vomitare e rende incapaci."
+  },
+  {
+    "tipo": "incantesimo",
+    "classe": "Mago",
+    "livello": 3,
+    "nome": "Capanna di Leomund (Tiny Hut)",
+    "txc_o_ts": "-",
+    "danni": "-",
+    "effetto": "Cupola magica protettiva fissa."
+  },
+  {
+    "tipo": "incantesimo",
+    "classe": "Mago",
+    "livello": 3,
+    "nome": "Linguaggi (Tongues)",
+    "txc_o_ts": "-",
+    "danni": "-",
+    "effetto": "Permette di parlare e capire qualsiasi lingua parlata."
+  },
+  {
+    "tipo": "incantesimo",
+    "classe": "Mago",
+    "livello": 3,
+    "nome": "Tocco Vampirico (Vampiric Touch)",
+    "txc_o_ts": "TxC incantesimo in mischia",
+    "danni": "3d6 necrotico",
+    "effetto": "Danni necrotici e ti curi metà dei danni inflitti."
+  },
+  {
+    "tipo": "incantesimo",
+    "classe": "Mago",
+    "livello": 3,
+    "nome": "Respirare Sott’Acqua (Water Breathing)",
+    "txc_o_ts": "-",
+    "danni": "-",
+    "effetto": "Permette a più creature di respirare sott’acqua."
+  },
+  {
+    "tipo": "incantesimo",
+    "classe": "Druido",
+    "livello": 0,
+    "nome": "Druidismo (Druidcraft)",
+    "txc_o_ts": "-",
+    "danni": "-",
+    "effetto": "Piccoli effetti naturali (meteo, fiori, odori)."
+  },
+  {
+    "tipo": "incantesimo",
+    "classe": "Druido",
+    "livello": 0,
+    "nome": "Produrre Fiamma (Produce Flame)",
+    "txc_o_ts": "TxC incantesimo a distanza",
+    "danni": "1d8 fuoco (cantrip, scala)",
+    "effetto": "Fiamma in mano che illumina o può essere lanciata."
+  },
+  {
+    "tipo": "incantesimo",
+    "classe": "Druido",
+    "livello": 0,
+    "nome": "Shillelagh (Shillelagh)",
+    "txc_o_ts": "-",
+    "danni": "Arma 1d8 contundente (usa SAG)",
+    "effetto": "Potenzia bastone o clava, usa Saggezza e diventa magica."
+  },
+  {
+    "tipo": "incantesimo",
+    "classe": "Druido",
+    "livello": 0,
+    "nome": "Guida (Guidance)",
+    "txc_o_ts": "-",
+    "danni": "-",
+    "effetto": "+1d4 a una prova di caratteristica."
+  },
+  {
+    "tipo": "incantesimo",
+    "classe": "Druido",
+    "livello": 0,
+    "nome": "Riparare (Mending)",
+    "txc_o_ts": "-",
+    "danni": "-",
+    "effetto": "Ripara piccoli oggetti o rotture."
+  },
+  {
+    "tipo": "incantesimo",
+    "classe": "Druido",
+    "livello": 0,
+    "nome": "Spruzzo Velenoso (Poison Spray)",
+    "txc_o_ts": "TS COS",
+    "danni": "1d12 veleno (cantrip, scala)",
+    "effetto": "Nube di veleno a corto raggio."
+  },
+  {
+    "tipo": "incantesimo",
+    "classe": "Druido",
+    "livello": 0,
+    "nome": "Resistenza (Resistance)",
+    "txc_o_ts": "-",
+    "danni": "-",
+    "effetto": "+1d4 a un tiro salvezza."
+  },
+  {
+    "tipo": "incantesimo",
+    "classe": "Druido",
+    "livello": 1,
+    "nome": "Amicizia Animale (Animal Friendship)",
+    "txc_o_ts": "TS SAG",
+    "danni": "-",
+    "effetto": "Convinci una bestia a non attaccarti."
+  },
+  {
+    "tipo": "incantesimo",
+    "classe": "Druido",
+    "livello": 1,
+    "nome": "Ammaliare Persona (Charm Person)",
+    "txc_o_ts": "TS SAG",
+    "danni": "-",
+    "effetto": "Rende più amichevole un umanoide verso di te."
+  },
+  {
+    "tipo": "incantesimo",
+    "classe": "Druido",
+    "livello": 1,
+    "nome": "Creare o Distruggere Acqua (Create or Destroy Water)",
+    "txc_o_ts": "-",
+    "danni": "-",
+    "effetto": "Crei o distruggi una certa quantità di acqua."
+  },
+  {
+    "tipo": "incantesimo",
+    "classe": "Druido",
+    "livello": 1,
+    "nome": "Cura Ferite (Cure Wounds)",
+    "txc_o_ts": "-",
+    "danni": "1d8 + mod inc.",
+    "effetto": "Cura toccando una creatura."
+  },
+  {
+    "tipo": "incantesimo",
+    "classe": "Druido",
+    "livello": 1,
+    "nome": "Individuazione del Magico (Detect Magic)",
+    "txc_o_ts": "-",
+    "danni": "-",
+    "effetto": "Percepisci aura e presenza di magia."
+  },
+  {
+    "tipo": "incantesimo",
+    "classe": "Druido",
+    "livello": 1,
+    "nome": "Individuazione di Veleni e Malattie (Detect Poison and Disease)",
+    "txc_o_ts": "-",
+    "danni": "-",
+    "effetto": "Scopri veleni, creature velenose e malattie."
+  },
+  {
+    "tipo": "incantesimo",
+    "classe": "Druido",
+    "livello": 1,
+    "nome": "Intralciare (Entangle)",
+    "txc_o_ts": "TS FOR",
+    "danni": "-",
+    "effetto": "Piante che afferrano e possono trattenere."
+  },
+  {
+    "tipo": "incantesimo",
+    "classe": "Druido",
+    "livello": 1,
+    "nome": "Fuoco Fatato (Faerie Fire)",
+    "txc_o_ts": "TS DES",
+    "danni": "-",
+    "effetto": "Illumina i bersagli e dà vantaggio agli attacchi."
+  },
+  {
+    "tipo": "incantesimo",
+    "classe": "Druido",
+    "livello": 1,
+    "nome": "Nube di Nebbia (Fog Cloud)",
+    "txc_o_ts": "-",
+    "danni": "-",
+    "effetto": "Nube che oscura la vista."
+  },
+  {
+    "tipo": "incantesimo",
+    "classe": "Druido",
+    "livello": 1,
+    "nome": "Bacche Benefiche (Goodberry)",
+    "txc_o_ts": "-",
+    "danni": "1 PF per bacca (max 10)",
+    "effetto": "Bacche che curano leggermente e nutrono."
+  },
+  {
+    "tipo": "incantesimo",
+    "classe": "Druido",
+    "livello": 1,
+    "nome": "Parola Guaritrice (Healing Word)",
+    "txc_o_ts": "-",
+    "danni": "1d4 + mod inc.",
+    "effetto": "Cura a distanza come azione bonus."
+  },
+  {
+    "tipo": "incantesimo",
+    "classe": "Druido",
+    "livello": 1,
+    "nome": "Salto (Jump)",
+    "txc_o_ts": "-",
+    "danni": "-",
+    "effetto": "Triplica la distanza di salto."
+  },
+  {
+    "tipo": "incantesimo",
+    "classe": "Druido",
+    "livello": 1,
+    "nome": "Passo Lungo (Longstrider)",
+    "txc_o_ts": "-",
+    "danni": "-",
+    "effetto": "Aumenta la velocità di circa 3 m."
+  },
+  {
+    "tipo": "incantesimo",
+    "classe": "Druido",
+    "livello": 1,
+    "nome": "Purificare Cibo e Bevande (Purify Food and Drink)",
+    "txc_o_ts": "-",
+    "danni": "-",
+    "effetto": "Rende sicuri cibo e bevande."
+  },
+  {
+    "tipo": "incantesimo",
+    "classe": "Druido",
+    "livello": 1,
+    "nome": "Parlare con gli Animali (Speak with Animals)",
+    "txc_o_ts": "-",
+    "danni": "-",
+    "effetto": "Permette una semplice conversazione con le bestie."
+  },
+  {
+    "tipo": "incantesimo",
+    "classe": "Druido",
+    "livello": 1,
+    "nome": "Onda Tonante (Thunderwave)",
+    "txc_o_ts": "TS COS",
+    "danni": "2d8 tuono (½ se TS riuscito)",
+    "effetto": "Esplosione sonora che danneggia e spinge via."
+  },
+  {
+    "tipo": "incantesimo",
+    "classe": "Druido",
+    "livello": 2,
+    "nome": "Messaggero Animale (Animal Messenger)",
+    "txc_o_ts": "-",
+    "danni": "-",
+    "effetto": "Invii un messaggio tramite una piccola bestia."
+  },
+  {
+    "tipo": "incantesimo",
+    "classe": "Druido",
+    "livello": 2,
+    "nome": "Pelle di Corteccia (Barkskin)",
+    "txc_o_ts": "-",
+    "danni": "-",
+    "effetto": "Imposta la CA minima della creatura (di solito 16)."
+  },
+  {
+    "tipo": "incantesimo",
+    "classe": "Druido",
+    "livello": 2,
+    "nome": "Scurovisione (Darkvision)",
+    "txc_o_ts": "-",
+    "danni": "-",
+    "effetto": "Conferisce scurovisione per ore."
+  },
+  {
+    "tipo": "incantesimo",
+    "classe": "Druido",
+    "livello": 2,
+    "nome": "Potenziare Caratteristica (Enhance Ability)",
+    "txc_o_ts": "-",
+    "danni": "-",
+    "effetto": "Bonus a prove legate a una caratteristica scelta."
+  },
+  {
+    "tipo": "incantesimo",
+    "classe": "Druido",
+    "livello": 2,
+    "nome": "Individuare Trappole (Find Traps)",
+    "txc_o_ts": "-",
+    "danni": "-",
+    "effetto": "Percepisci la presenza di trappole."
+  },
+  {
+    "tipo": "incantesimo",
+    "classe": "Druido",
+    "livello": 2,
+    "nome": "Lama di Fuoco (Flame Blade)",
+    "txc_o_ts": "TxC incantesimo in mischia",
+    "danni": "3d6 fuoco",
+    "effetto": "Evoca una lama di fuoco come arma."
+  },
+  {
+    "tipo": "incantesimo",
+    "classe": "Druido",
+    "livello": 2,
+    "nome": "Sfera Fiammeggiante (Flaming Sphere)",
+    "txc_o_ts": "TS DES",
+    "danni": "2d6 fuoco (½ se TS riuscito)",
+    "effetto": "Sfera di fuoco che rotoli addosso ai nemici."
+  },
+  {
+    "tipo": "incantesimo",
+    "classe": "Druido",
+    "livello": 2,
+    "nome": "Soffio di Vento (Gust of Wind)",
+    "txc_o_ts": "TS FOR",
+    "danni": "-",
+    "effetto": "Colonna di vento che spinge e disperde gas."
+  },
+  {
+    "tipo": "incantesimo",
+    "classe": "Druido",
+    "livello": 2,
+    "nome": "Metallo Bollente (Heat Metal)",
+    "txc_o_ts": "TS COS per tenere l’oggetto",
+    "danni": "2d8 fuoco (ripetibile)",
+    "effetto": "Surriscalda metallo e danneggia chi lo porta."
+  },
+  {
+    "tipo": "incantesimo",
+    "classe": "Druido",
+    "livello": 2,
+    "nome": "Blocca Persone (Hold Person)",
+    "txc_o_ts": "TS SAG",
+    "danni": "-",
+    "effetto": "Paralizza un umanoide."
+  },
+  {
+    "tipo": "incantesimo",
+    "classe": "Druido",
+    "livello": 2,
+    "nome": "Ristorare Inferiore (Lesser Restoration)",
+    "txc_o_ts": "-",
+    "danni": "-",
+    "effetto": "Rimuove condizioni come accecato, paralizzato, avvelenato."
+  },
+  {
+    "tipo": "incantesimo",
+    "classe": "Druido",
+    "livello": 2,
+    "nome": "Localizzare Animali o Piante (Locate Animals or Plants)",
+    "txc_o_ts": "-",
+    "danni": "-",
+    "effetto": "Indica direzione di un tipo di animale o pianta."
+  },
+  {
+    "tipo": "incantesimo",
+    "classe": "Druido",
+    "livello": 2,
+    "nome": "Localizzare Oggetto (Locate Object)",
+    "txc_o_ts": "-",
+    "danni": "-",
+    "effetto": "Indica direzione di un oggetto noto."
+  },
+  {
+    "tipo": "incantesimo",
+    "classe": "Druido",
+    "livello": 2,
+    "nome": "Raggio di Luna (Moonbeam)",
+    "txc_o_ts": "TS COS",
+    "danni": "2d10 radiante (½ se TS riuscito)",
+    "effetto": "Colonna di luce lunare che danneggia e disturba mutaforma."
+  },
+  {
+    "tipo": "incantesimo",
+    "classe": "Druido",
+    "livello": 2,
+    "nome": "Passo Senza Traccia (Pass without Trace)",
+    "txc_o_ts": "-",
+    "danni": "-",
+    "effetto": "Grande bonus alla Furtività e nessuna traccia."
+  },
+  {
+    "tipo": "incantesimo",
+    "classe": "Druido",
+    "livello": 2,
+    "nome": "Protezione dal Veleno (Protection from Poison)",
+    "txc_o_ts": "-",
+    "danni": "-",
+    "effetto": "Cura avvelenamento e dà resistenza al veleno."
+  },
+  {
+    "tipo": "incantesimo",
+    "classe": "Druido",
+    "livello": 2,
+    "nome": "Crescita Spinosa (Spike Growth)",
+    "txc_o_ts": "-",
+    "danni": "2d4 perforanti per 1,5 m",
+    "effetto": "Area di spine invisibili che feriscono chi si muove."
+  },
+  {
+    "tipo": "incantesimo",
+    "classe": "Druido",
+    "livello": 3,
+    "nome": "Evoca Fulmine (Call Lightning)",
+    "txc_o_ts": "TS DES",
+    "danni": "3d10 fulmine (½ se TS riuscito)",
+    "effetto": "Nuvola di tempesta da cui richiami fulmini ripetuti."
+  },
+  {
+    "tipo": "incantesimo",
+    "classe": "Druido",
+    "livello": 3,
+    "nome": "Evoca Animali (Conjure Animals)",
+    "txc_o_ts": "-",
+    "danni": "-",
+    "effetto": "Evoca bestie alleate che combattono per te."
+  },
+  {
+    "tipo": "incantesimo",
+    "classe": "Druido",
+    "livello": 3,
+    "nome": "Luce Diurna (Daylight)",
+    "txc_o_ts": "-",
+    "danni": "-",
+    "effetto": "Forte luce magica che scaccia molte oscurità."
+  },
+  {
+    "tipo": "incantesimo",
+    "classe": "Druido",
+    "livello": 3,
+    "nome": "Dissolvi Magie (Dispel Magic)",
+    "txc_o_ts": "-",
+    "danni": "-",
+    "effetto": "Annulla magie ed effetti magici."
+  },
+  {
+    "tipo": "incantesimo",
+    "classe": "Druido",
+    "livello": 3,
+    "nome": "Fondersi nella Pietra (Meld into Stone)",
+    "txc_o_ts": "-",
+    "danni": "-",
+    "effetto": "Ti fondi in una superficie di pietra rimanendo protetto."
+  },
+  {
+    "tipo": "incantesimo",
+    "classe": "Druido",
+    "livello": 3,
+    "nome": "Crescita delle Piante (Plant Growth)",
+    "txc_o_ts": "-",
+    "danni": "-",
+    "effetto": "Rende le piante fitte e difficili o molto fertili."
+  },
+  {
+    "tipo": "incantesimo",
+    "classe": "Druido",
+    "livello": 3,
+    "nome": "Protezione dall’Energia (Protection from Energy)",
+    "txc_o_ts": "-",
+    "danni": "-",
+    "effetto": "Resistenza a un tipo di danno energetico."
+  },
+  {
+    "tipo": "incantesimo",
+    "classe": "Druido",
+    "livello": 3,
+    "nome": "Tempesta Gelata (Sleet Storm)",
+    "txc_o_ts": "-",
+    "danni": "-",
+    "effetto": "Tempesta che rende il terreno scivoloso e oscura la vista."
+  },
+  {
+    "tipo": "incantesimo",
+    "classe": "Druido",
+    "livello": 3,
+    "nome": "Parlare con le Piante (Speak with Plants)",
+    "txc_o_ts": "-",
+    "danni": "-",
+    "effetto": "Permette di comunicare con piante e vegetazione."
+  },
+  {
+    "tipo": "incantesimo",
+    "classe": "Druido",
+    "livello": 3,
+    "nome": "Respirare Sott’Acqua (Water Breathing)",
+    "txc_o_ts": "-",
+    "danni": "-",
+    "effetto": "Permette a più creature di respirare sott’acqua."
+  },
+  {
+    "tipo": "incantesimo",
+    "classe": "Druido",
+    "livello": 3,
+    "nome": "Camminare sull’Acqua (Water Walk)",
+    "txc_o_ts": "-",
+    "danni": "-",
+    "effetto": "Permette di camminare su acqua o liquidi."
+  },
+  {
+    "tipo": "incantesimo",
+    "classe": "Druido",
+    "livello": 3,
+    "nome": "Muro di Vento (Wind Wall)",
+    "txc_o_ts": "TS FOR",
+    "danni": "3d8 contundente (½ se TS riuscito)",
+    "effetto": "Muro di vento che respinge proiettili e piccole creature."
+  },
+  {
+    "tipo": "incantesimo",
+    "classe": "Chierico",
+    "livello": 0,
+    "nome": "Guida (Guidance)",
+    "txc_o_ts": "-",
+    "danni": "-",
+    "effetto": "+1d4 a un tiro di caratteristica."
+  },
+  {
+    "tipo": "incantesimo",
+    "classe": "Chierico",
+    "livello": 0,
+    "nome": "Luce (Light)",
+    "txc_o_ts": "-",
+    "danni": "-",
+    "effetto": "Un oggetto brilla come una torcia."
+  },
+  {
+    "tipo": "incantesimo",
+    "classe": "Chierico",
+    "livello": 0,
+    "nome": "Riparare (Mending)",
+    "txc_o_ts": "-",
+    "danni": "-",
+    "effetto": "Ripara piccoli oggetti o rotture."
+  },
+  {
+    "tipo": "incantesimo",
+    "classe": "Chierico",
+    "livello": 0,
+    "nome": "Resistenza (Resistance)",
+    "txc_o_ts": "-",
+    "danni": "-",
+    "effetto": "+1d4 a un tiro salvezza."
+  },
+  {
+    "tipo": "incantesimo",
+    "classe": "Chierico",
+    "livello": 0,
+    "nome": "Fiamma Sacra (Sacred Flame)",
+    "txc_o_ts": "TS DES",
+    "danni": "1d8 radiante (cantrip, scala)",
+    "effetto": "Fiammata di luce sacra che ignora coperture parziali."
+  },
+  {
+    "tipo": "incantesimo",
+    "classe": "Chierico",
+    "livello": 0,
+    "nome": "Risparmiare il Morente (Spare the Dying)",
+    "txc_o_ts": "-",
+    "danni": "-",
+    "effetto": "Stabilizza una creatura a 0 PF."
+  },
+  {
+    "tipo": "incantesimo",
+    "classe": "Chierico",
+    "livello": 0,
+    "nome": "Taumaturgia (Thaumaturgy)",
+    "txc_o_ts": "-",
+    "danni": "-",
+    "effetto": "Piccoli effetti miracolosi che influenzano ambiente e voce."
+  },
+  {
+    "tipo": "incantesimo",
+    "classe": "Chierico",
+    "livello": 1,
+    "nome": "Anatema (Bane)",
+    "txc_o_ts": "TS CAR",
+    "danni": "-",
+    "effetto": "Penalizza attacchi e TS di nemici (−1d4)."
+  },
+  {
+    "tipo": "incantesimo",
+    "classe": "Chierico",
+    "livello": 1,
+    "nome": "Benedizione (Bless)",
+    "txc_o_ts": "-",
+    "danni": "-",
+    "effetto": "Alleati ottengono +1d4 a TxC e TS."
+  },
+  {
+    "tipo": "incantesimo",
+    "classe": "Chierico",
+    "livello": 1,
+    "nome": "Comando (Command)",
+    "txc_o_ts": "TS SAG",
+    "danni": "-",
+    "effetto": "Un bersaglio obbedisce a un comando semplice per 1 round."
+  },
+  {
+    "tipo": "incantesimo",
+    "classe": "Chierico",
+    "livello": 1,
+    "nome": "Creare o Distruggere Acqua (Create or Destroy Water)",
+    "txc_o_ts": "-",
+    "danni": "-",
+    "effetto": "Crei o distruggi una certa quantità di acqua."
+  },
+  {
+    "tipo": "incantesimo",
+    "classe": "Chierico",
+    "livello": 1,
+    "nome": "Cura Ferite (Cure Wounds)",
+    "txc_o_ts": "-",
+    "danni": "1d8 + mod inc.",
+    "effetto": "Cura toccando una creatura."
+  },
+  {
+    "tipo": "incantesimo",
+    "classe": "Chierico",
+    "livello": 1,
+    "nome": "Individuazione del Bene e del Male (Detect Evil and Good)",
+    "txc_o_ts": "-",
+    "danni": "-",
+    "effetto": "Percepisci aberrazioni, celestiali, immondi e simili."
+  },
+  {
+    "tipo": "incantesimo",
+    "classe": "Chierico",
+    "livello": 1,
+    "nome": "Individuazione del Magico (Detect Magic)",
+    "txc_o_ts": "-",
+    "danni": "-",
+    "effetto": "Percepisci aura e presenza di magia."
+  },
+  {
+    "tipo": "incantesimo",
+    "classe": "Chierico",
+    "livello": 1,
+    "nome": "Individuazione di Veleni e Malattie (Detect Poison and Disease)",
+    "txc_o_ts": "-",
+    "danni": "-",
+    "effetto": "Scopri veleni, creature velenose e malattie."
+  },
+  {
+    "tipo": "incantesimo",
+    "classe": "Chierico",
+    "livello": 1,
+    "nome": "Dardo Tracciante (Guiding Bolt)",
+    "txc_o_ts": "TxC incantesimo a distanza",
+    "danni": "4d6 radiante",
+    "effetto": "Raggio di luce che dà vantaggio al prossimo attacco sul bersaglio."
+  },
+  {
+    "tipo": "incantesimo",
+    "classe": "Chierico",
+    "livello": 1,
+    "nome": "Parola Guaritrice (Healing Word)",
+    "txc_o_ts": "-",
+    "danni": "1d4 + mod inc.",
+    "effetto": "Cura a distanza come azione bonus."
+  },
+  {
+    "tipo": "incantesimo",
+    "classe": "Chierico",
+    "livello": 1,
+    "nome": "Infliggi Ferite (Inflict Wounds)",
+    "txc_o_ts": "TxC incantesimo in mischia",
+    "danni": "3d10 necrotico",
+    "effetto": "Tocco necrotico che infligge grossi danni."
+  },
+  {
+    "tipo": "incantesimo",
+    "classe": "Chierico",
+    "livello": 1,
+    "nome": "Protezione dal Bene e dal Male (Protection from Evil and Good)",
+    "txc_o_ts": "-",
+    "danni": "-",
+    "effetto": "Bonus difensivi contro varie creature extraplanari e non morti."
+  },
+  {
+    "tipo": "incantesimo",
+    "classe": "Chierico",
+    "livello": 1,
+    "nome": "Purificare Cibo e Bevande (Purify Food and Drink)",
+    "txc_o_ts": "-",
+    "danni": "-",
+    "effetto": "Rende sicuri cibo e bevande."
+  },
+  {
+    "tipo": "incantesimo",
+    "classe": "Chierico",
+    "livello": 1,
+    "nome": "Santuario (Sanctuary)",
+    "txc_o_ts": "TS SAG per attaccare",
+    "danni": "-",
+    "effetto": "Protegge una creatura; i nemici devono cambiare bersaglio o superare TS."
+  },
+  {
+    "tipo": "incantesimo",
+    "classe": "Chierico",
+    "livello": 1,
+    "nome": "Scudo della Fede (Shield of Faith)",
+    "txc_o_ts": "-",
+    "danni": "-",
+    "effetto": "+2 CA a una creatura finché dura la concentrazione."
+  },
+  {
+    "tipo": "incantesimo",
+    "classe": "Chierico",
+    "livello": 2,
+    "nome": "Aiuto (Aid)",
+    "txc_o_ts": "-",
+    "danni": "+5 PF massimi e attuali",
+    "effetto": "Aumenta PF massimi e attuali di tre creature."
+  },
+  {
+    "tipo": "incantesimo",
+    "classe": "Chierico",
+    "livello": 2,
+    "nome": "Augurio (Augury)",
+    "txc_o_ts": "-",
+    "danni": "-",
+    "effetto": "Presagio sul risultato di un’azione imminente."
+  },
+  {
+    "tipo": "incantesimo",
+    "classe": "Chierico",
+    "livello": 2,
+    "nome": "Cecità/Sordità (Blindness/Deafness)",
+    "txc_o_ts": "TS COS",
+    "danni": "-",
+    "effetto": "Rende una creatura cieca o sorda."
+  },
+  {
+    "tipo": "incantesimo",
+    "classe": "Chierico",
+    "livello": 2,
+    "nome": "Calmare Emozioni (Calm Emotions)",
+    "txc_o_ts": "TS CAR",
+    "danni": "-",
+    "effetto": "Sopprime emozioni forti, può interrompere charme o paura."
+  },
+  {
+    "tipo": "incantesimo",
+    "classe": "Chierico",
+    "livello": 2,
+    "nome": "Fiamma Persistente (Continual Flame)",
+    "txc_o_ts": "-",
+    "danni": "-",
+    "effetto": "Fiamma magica eterna che non consuma."
+  },
+  {
+    "tipo": "incantesimo",
+    "classe": "Chierico",
+    "livello": 2,
+    "nome": "Potenziare Caratteristica (Enhance Ability)",
+    "txc_o_ts": "-",
+    "danni": "-",
+    "effetto": "Bonus a prove di una caratteristica (Forza, Saggezza, ecc.)."
+  },
+  {
+    "tipo": "incantesimo",
+    "classe": "Chierico",
+    "livello": 2,
+    "nome": "Individuare Trappole (Find Traps)",
+    "txc_o_ts": "-",
+    "danni": "-",
+    "effetto": "Percepisci presenza di trappole nell’area."
+  },
+  {
+    "tipo": "incantesimo",
+    "classe": "Chierico",
+    "livello": 2,
+    "nome": "Riposo Tranquillo (Gentle Repose)",
+    "txc_o_ts": "-",
+    "danni": "-",
+    "effetto": "Preserva un cadavere e ne blocca animazione."
+  },
+  {
+    "tipo": "incantesimo",
+    "classe": "Chierico",
+    "livello": 2,
+    "nome": "Blocca Persone (Hold Person)",
+    "txc_o_ts": "TS SAG",
+    "danni": "-",
+    "effetto": "Paralizza un umanoide."
+  },
+  {
+    "tipo": "incantesimo",
+    "classe": "Chierico",
+    "livello": 2,
+    "nome": "Ristorare Inferiore (Lesser Restoration)",
+    "txc_o_ts": "-",
+    "danni": "-",
+    "effetto": "Rimuove cecità, sordità, paralisi, avvelenamento."
+  },
+  {
+    "tipo": "incantesimo",
+    "classe": "Chierico",
+    "livello": 2,
+    "nome": "Localizzare Oggetto (Locate Object)",
+    "txc_o_ts": "-",
+    "danni": "-",
+    "effetto": "Indica direzione di un oggetto noto."
+  },
+  {
+    "tipo": "incantesimo",
+    "classe": "Chierico",
+    "livello": 2,
+    "nome": "Preghiera di Guarigione (Prayer of Healing)",
+    "txc_o_ts": "-",
+    "danni": "2d8 + mod inc. a più creature",
+    "effetto": "Cura più creature dopo 10 minuti di preghiera."
+  },
+  {
+    "tipo": "incantesimo",
+    "classe": "Chierico",
+    "livello": 2,
+    "nome": "Protezione dal Veleno (Protection from Poison)",
+    "txc_o_ts": "-",
+    "danni": "-",
+    "effetto": "Cura avvelenamento e dà resistenza al veleno."
+  },
+  {
+    "tipo": "incantesimo",
+    "classe": "Chierico",
+    "livello": 2,
+    "nome": "Silenzio (Silence)",
+    "txc_o_ts": "-",
+    "danni": "-",
+    "effetto": "Area di silenzio che blocca incantesimi verbali."
+  },
+  {
+    "tipo": "incantesimo",
+    "classe": "Chierico",
+    "livello": 2,
+    "nome": "Arma Spirituale (Spiritual Weapon)",
+    "txc_o_ts": "TxC incantesimo in mischia",
+    "danni": "1d8 + mod inc. forza",
+    "effetto": "Evoca arma fluttuante che attacca come azione bonus."
+  },
+  {
+    "tipo": "incantesimo",
+    "classe": "Chierico",
+    "livello": 2,
+    "nome": "Legame di Guardia (Warding Bond)",
+    "txc_o_ts": "-",
+    "danni": "-",
+    "effetto": "Condividi danni con un alleato e gli dai bonus a CA e TS."
+  },
+  {
+    "tipo": "incantesimo",
+    "classe": "Chierico",
+    "livello": 2,
+    "nome": "Zona di Verità (Zone of Truth)",
+    "txc_o_ts": "TS CAR",
+    "danni": "-",
+    "effetto": "Costringe a dire la verità (o tacere) in un’area."
+  },
+  {
+    "tipo": "incantesimo",
+    "classe": "Chierico",
+    "livello": 3,
+    "nome": "Animare Morti (Animate Dead)",
+    "txc_o_ts": "-",
+    "danni": "-",
+    "effetto": "Rialza scheletri o zombie come servitori."
+  },
+  {
+    "tipo": "incantesimo",
+    "classe": "Chierico",
+    "livello": 3,
+    "nome": "Faro di Speranza (Beacon of Hope)",
+    "txc_o_ts": "-",
+    "danni": "-",
+    "effetto": "Migliora cure ricevute e dà vantaggio a certi TS."
+  },
+  {
+    "tipo": "incantesimo",
+    "classe": "Chierico",
+    "livello": 3,
+    "nome": "Infliggi Maledizione (Bestow Curse)",
+    "txc_o_ts": "TS SAG",
+    "danni": "-",
+    "effetto": "Applichi una maledizione personalizzabile."
+  },
+  {
+    "tipo": "incantesimo",
+    "classe": "Chierico",
+    "livello": 3,
+    "nome": "Chiaroveggenza (Clairvoyance)",
+    "txc_o_ts": "-",
+    "danni": "-",
+    "effetto": "Vedi o senti a distanza da un punto scelto."
+  },
+  {
+    "tipo": "incantesimo",
+    "classe": "Chierico",
+    "livello": 3,
+    "nome": "Creare Cibo e Acqua (Create Food and Water)",
+    "txc_o_ts": "-",
+    "danni": "-",
+    "effetto": "Crea cibo e acqua sufficienti per un gruppo."
+  },
+  {
+    "tipo": "incantesimo",
+    "classe": "Chierico",
+    "livello": 3,
+    "nome": "Luce Diurna (Daylight)",
+    "txc_o_ts": "-",
+    "danni": "-",
+    "effetto": "Forte luce magica che scaccia molte oscurità."
+  },
+  {
+    "tipo": "incantesimo",
+    "classe": "Chierico",
+    "livello": 3,
+    "nome": "Dissolvi Magie (Dispel Magic)",
+    "txc_o_ts": "-",
+    "danni": "-",
+    "effetto": "Annulla magie ed effetti magici."
+  },
+  {
+    "tipo": "incantesimo",
+    "classe": "Chierico",
+    "livello": 3,
+    "nome": "Glifo di Interdizione (Glyph of Warding)",
+    "txc_o_ts": "TS DES o TS incantesimo",
+    "danni": "5d8 danni o incantesimo legato",
+    "effetto": "Sigillo trappola che esplode o rilascia magia."
+  },
+  {
+    "tipo": "incantesimo",
+    "classe": "Chierico",
+    "livello": 3,
+    "nome": "Cerchio Magico (Magic Circle)",
+    "txc_o_ts": "-",
+    "danni": "-",
+    "effetto": "Cerchio che imprigiona o respinge certe creature."
+  },
+  {
+    "tipo": "incantesimo",
+    "classe": "Chierico",
+    "livello": 3,
+    "nome": "Parola Guaritrice di Massa (Mass Healing Word)",
+    "txc_o_ts": "-",
+    "danni": "1d4 + mod inc. a più creature",
+    "effetto": "Cura più creature come azione bonus a distanza."
+  },
+  {
+    "tipo": "incantesimo",
+    "classe": "Chierico",
+    "livello": 3,
+    "nome": "Fondersi nella Pietra (Meld into Stone)",
+    "txc_o_ts": "-",
+    "danni": "-",
+    "effetto": "Ti fondi in una superficie di pietra rimanendo protetto."
+  },
+  {
+    "tipo": "incantesimo",
+    "classe": "Chierico",
+    "livello": 3,
+    "nome": "Protezione dall’Energia (Protection from Energy)",
+    "txc_o_ts": "-",
+    "danni": "-",
+    "effetto": "Resistenza a un tipo di danno energetico."
+  },
+  {
+    "tipo": "incantesimo",
+    "classe": "Chierico",
+    "livello": 3,
+    "nome": "Rimuovi Maledizione (Remove Curse)",
+    "txc_o_ts": "-",
+    "danni": "-",
+    "effetto": "Rimuove maledizioni e oggetti maledetti."
+  },
+  {
+    "tipo": "incantesimo",
+    "classe": "Chierico",
+    "livello": 3,
+    "nome": "Rianimare (Revivify)",
+    "txc_o_ts": "-",
+    "danni": "-",
+    "effetto": "Riporta in vita una creatura morta da massimo 1 minuto."
+  },
+  {
+    "tipo": "incantesimo",
+    "classe": "Chierico",
+    "livello": 3,
+    "nome": "Invio (Sending)",
+    "txc_o_ts": "-",
+    "danni": "-",
+    "effetto": "Messaggio mentale istantaneo, anche tra piani."
+  },
+  {
+    "tipo": "incantesimo",
+    "classe": "Chierico",
+    "livello": 3,
+    "nome": "Parlare con i Morti (Speak with Dead)",
+    "txc_o_ts": "-",
+    "danni": "-",
+    "effetto": "Interroghi un cadavere che risponde a poche domande."
+  },
+  {
+    "tipo": "incantesimo",
+    "classe": "Chierico",
+    "livello": 3,
+    "nome": "Guardiani Spirituali (Spirit Guardians)",
+    "txc_o_ts": "TS SAG",
+    "danni": "3d8 radianti o necrotici per round (½ se TS)",
+    "effetto": "Spettri che danneggiano i nemici vicini e li rallentano."
+  },
+  {
+    "tipo": "incantesimo",
+    "classe": "Chierico",
+    "livello": 3,
+    "nome": "Linguaggi (Tongues)",
+    "txc_o_ts": "-",
+    "danni": "-",
+    "effetto": "Permette di parlare e capire qualsiasi lingua parlata."
+  },
+  {
+    "tipo": "incantesimo",
+    "classe": "Chierico",
+    "livello": 3,
+    "nome": "Camminare sull’Acqua (Water Walk)",
+    "txc_o_ts": "-",
+    "danni": "-",
+    "effetto": "Permette di camminare su acqua o liquidi."
+  },
+    ];
+
+    const classAbilitiesDB = [
+     {
+    "tipo": "abilità_classe",
+    "classe": "Druido",
+    "livello": 1,
+    "nome": "Druidico",
+    "effetto": "Conosci un linguaggio segreto druidico, comprensibile solo da te e da altri druidi."
+  },
+  {
+    "tipo": "abilità_classe",
+    "classe": "Druido",
+    "livello": 1,
+    "nome": "Incantesimi Druidi",
+    "effetto": "Lanci incantesimi della lista del druido; prepari ogni giorno incantesimi in base al livello e alla Saggezza."
+  },
+  {
+    "tipo": "abilità_classe",
+    "classe": "Druido",
+    "livello": 2,
+    "nome": "Forma Selvatica (Wild Shape)",
+    "effetto": "2 usi per riposo corto/lungo; ti trasformi in bestie di GS 1/4 o inferiore senza volo o nuoto, usando i tuoi punteggi mentali."
+  },
+  {
+    "tipo": "abilità_classe",
+    "classe": "Druido",
+    "livello": 2,
+    "nome": "Cerchio del Druido",
+    "effetto": "Scegli un cerchio (sottoclasse) che ti concede poteri tematici e spesso incantesimi aggiuntivi."
+  },
+  {
+    "tipo": "abilità_classe",
+    "classe": "Druido",
+    "livello": 4,
+    "nome": "Miglioramento Caratteristiche (Druido 1)",
+    "effetto": "Aumenti due punteggi di caratteristica di +1 o uno di +2, oppure prendi un talento (se consentito)."
+  },
+  {
+    "tipo": "abilità_classe",
+    "classe": "Druido",
+    "livello": 4,
+    "nome": "Forma Selvatica Migliorata (CR 1/2, nuoto)",
+    "effetto": "Puoi trasformarti in bestie con GS fino a 1/2 e con velocità di nuoto, ma ancora senza volo."
+  },
+  {
+    "tipo": "abilità_classe",
+    "classe": "Druido",
+    "livello": 6,
+    "nome": "Capacità del Cerchio (6° livello)",
+    "effetto": "Ottieni una capacità aggiuntiva determinata dal tuo cerchio druidico."
+  },
+  {
+    "tipo": "abilità_classe",
+    "classe": "Druido",
+    "livello": 8,
+    "nome": "Miglioramento Caratteristiche (Druido 2)",
+    "effetto": "Secondo aumento dei punteggi di caratteristica o talento."
+  },
+  {
+    "tipo": "abilità_classe",
+    "classe": "Druido",
+    "livello": 8,
+    "nome": "Forma Selvatica Volante (CR 1, volo)",
+    "effetto": "Puoi trasformarti in bestie con GS fino a 1 che possiedono una velocità di volo."
+  },
+  {
+    "tipo": "abilità_classe",
+    "classe": "Druido",
+    "livello": 10,
+    "nome": "Capacità del Cerchio (10° livello)",
+    "effetto": "Ottieni una nuova capacità dal tuo cerchio druidico."
+  },
+  {
+    "tipo": "abilità_classe",
+    "classe": "Druido",
+    "livello": 12,
+    "nome": "Miglioramento Caratteristiche (Druido 3)",
+    "effetto": "Terzo aumento dei punteggi di caratteristica o talento."
+  },
+  {
+    "tipo": "abilità_classe",
+    "classe": "Druido",
+    "livello": 14,
+    "nome": "Capacità del Cerchio (14° livello)",
+    "effetto": "Ottieni una capacità avanzata dal tuo cerchio druidico."
+  },
+  {
+    "tipo": "abilità_classe",
+    "classe": "Druido",
+    "livello": 16,
+    "nome": "Miglioramento Caratteristiche (Druido 4)",
+    "effetto": "Quarto aumento dei punteggi di caratteristica o talento."
+  },
+  {
+    "tipo": "abilità_classe",
+    "classe": "Druido",
+    "livello": 18,
+    "nome": "Corpo Senza Tempo (Timeless Body)",
+    "effetto": "Gli effetti dell’invecchiamento su di te rallentano; non puoi essere invecchiato magicamente e hai meno bisogno di cibo e acqua."
+  },
+  {
+    "tipo": "abilità_classe",
+    "classe": "Druido",
+    "livello": 18,
+    "nome": "Incantesimi Bestiali (Beast Spells)",
+    "effetto": "Puoi lanciare molti incantesimi da druido anche mentre sei in Forma Selvatica."
+  },
+  {
+    "tipo": "abilità_classe",
+    "classe": "Druido",
+    "livello": 19,
+    "nome": "Miglioramento Caratteristiche (Druido 5)",
+    "effetto": "Quinto aumento dei punteggi di caratteristica o talento."
+  },
+  {
+    "tipo": "abilità_classe",
+    "classe": "Druido",
+    "livello": 20,
+    "nome": "Arcidruido",
+    "effetto": "Usi Forma Selvatica a volontà e puoi ignorare alcuni componenti materiali poco costosi dei tuoi incantesimi."
+  },
+  {
+    "tipo": "abilità_classe",
+    "classe": "Chierico",
+    "livello": 1,
+    "nome": "Incantesimi Divini",
+    "effetto": "Lanci incantesimi della lista del chierico; prepari ogni giorno incantesimi in base al livello e alla Saggezza."
+  },
+  {
+    "tipo": "abilità_classe",
+    "classe": "Chierico",
+    "livello": 1,
+    "nome": "Dominio Divino",
+    "effetto": "Scegli un dominio legato alla tua divinità; ottieni incantesimi bonus e capacità tematiche."
+  },
+  {
+    "tipo": "abilità_classe",
+    "classe": "Chierico",
+    "livello": 2,
+    "nome": "Canalizzare Divinità (1 uso)",
+    "effetto": "Una volta per riposo breve/lungo spendi un uso per attivare effetti divini (Scacciare Non Morti o poteri del tuo dominio)."
+  },
+  {
+    "tipo": "abilità_classe",
+    "classe": "Chierico",
+    "livello": 2,
+    "nome": "Potere del Dominio (2° livello)",
+    "effetto": "Ottieni una capacità aggiuntiva legata al tuo dominio, spesso collegata a Canalizzare Divinità."
+  },
+  {
+    "tipo": "abilità_classe",
+    "classe": "Chierico",
+    "livello": 4,
+    "nome": "Miglioramento Caratteristiche (Chierico 1)",
+    "effetto": "Aumenti due punteggi di caratteristica di +1 o uno di +2, oppure prendi un talento (se consentito)."
+  },
+  {
+    "tipo": "abilità_classe",
+    "classe": "Chierico",
+    "livello": 5,
+    "nome": "Distruggere Non Morti (CR basso)",
+    "effetto": "Quando scacci i non morti, quelli con grado sfida molto basso vengono distrutti invece che semplicemente respinti."
+  },
+  {
+    "tipo": "abilità_classe",
+    "classe": "Chierico",
+    "livello": 6,
+    "nome": "Potere del Dominio (6° livello)",
+    "effetto": "Ottieni una capacità di dominio intermedia, che rafforza il tuo stile di gioco."
+  },
+  {
+    "tipo": "abilità_classe",
+    "classe": "Chierico",
+    "livello": 6,
+    "nome": "Canalizzare Divinità (2 usi)",
+    "effetto": "Puoi usare Canalizzare Divinità due volte tra un riposo e l’altro."
+  },
+  {
+    "tipo": "abilità_classe",
+    "classe": "Chierico",
+    "livello": 8,
+    "nome": "Miglioramento Caratteristiche (Chierico 2)",
+    "effetto": "Secondo aumento dei punteggi di caratteristica o talento."
+  },
+  {
+    "tipo": "abilità_classe",
+    "classe": "Chierico",
+    "livello": 8,
+    "nome": "Potere del Dominio (8° livello)",
+    "effetto": "Ottieni una capacità che spesso aumenta i tuoi danni o la potenza dei tuoi incantesimi (es. Colpo Divino)."
+  },
+  {
+    "tipo": "abilità_classe",
+    "classe": "Chierico",
+    "livello": 10,
+    "nome": "Intervento Divino",
+    "effetto": "Puoi chiedere direttamente l’aiuto della tua divinità; l’esito dipende dal tiro e dal giudizio del DM."
+  },
+  {
+    "tipo": "abilità_classe",
+    "classe": "Chierico",
+    "livello": 12,
+    "nome": "Miglioramento Caratteristiche (Chierico 3)",
+    "effetto": "Terzo aumento dei punteggi di caratteristica o talento."
+  },
+  {
+    "tipo": "abilità_classe",
+    "classe": "Chierico",
+    "livello": 14,
+    "nome": "Distruggere Non Morti Migliorato (CR medio)",
+    "effetto": "La soglia di grado sfida per distruggere i non morti con il tuo potere aumenta."
+  },
+  {
+    "tipo": "abilità_classe",
+    "classe": "Chierico",
+    "livello": 16,
+    "nome": "Miglioramento Caratteristiche (Chierico 4)",
+    "effetto": "Quarto aumento dei punteggi di caratteristica o talento."
+  },
+  {
+    "tipo": "abilità_classe",
+    "classe": "Chierico",
+    "livello": 17,
+    "nome": "Potere del Dominio (17° livello)",
+    "effetto": "Capacità di dominio finale, molto potente e tematica."
+  },
+  {
+    "tipo": "abilità_classe",
+    "classe": "Chierico",
+    "livello": 17,
+    "nome": "Distruggere Non Morti Migliorato (CR alto)",
+    "effetto": "Puoi distruggere non morti di grado sfida ancora più alto con il tuo potere."
+  },
+  {
+    "tipo": "abilità_classe",
+    "classe": "Chierico",
+    "livello": 18,
+    "nome": "Canalizzare Divinità (3 usi)",
+    "effetto": "Puoi usare Canalizzare Divinità tre volte tra un riposo e l’altro."
+  },
+  {
+    "tipo": "abilità_classe",
+    "classe": "Chierico",
+    "livello": 19,
+    "nome": "Miglioramento Caratteristiche (Chierico 5)",
+    "effetto": "Quinto aumento dei punteggi di caratteristica o talento."
+  },
+  {
+    "tipo": "abilità_classe",
+    "classe": "Chierico",
+    "livello": 20,
+    "nome": "Intervento Divino Migliorato",
+    "effetto": "La tua richiesta di Intervento Divino ha molte più probabilità di riuscire; ad alti livelli può riuscire automaticamente."
+  },
+  {
+    "tipo": "abilità_classe",
+    "classe": "Mago",
+    "livello": 1,
+    "nome": "Incantesimi Arcani",
+    "effetto": "Lanci incantesimi della lista del mago, preparandoli ogni giorno dal tuo libro in base al livello e all’Intelligenza."
+  },
+  {
+    "tipo": "abilità_classe",
+    "classe": "Mago",
+    "livello": 1,
+    "nome": "Libro degli Incantesimi",
+    "effetto": "Tieni traccia degli incantesimi conosciuti in un grimorio; puoi copiarvi nuovi incantesimi trovati spendendo tempo e oro."
+  },
+  {
+    "tipo": "abilità_classe",
+    "classe": "Mago",
+    "livello": 1,
+    "nome": "Recupero Arcano",
+    "effetto": "Una volta al giorno, dopo un riposo breve, recuperi slot la cui somma di livelli è pari o inferiore a metà del tuo livello da mago."
+  },
+  {
+    "tipo": "abilità_classe",
+    "classe": "Mago",
+    "livello": 2,
+    "nome": "Tradizione Arcana (Sottoclasse)",
+    "effetto": "Scegli una scuola o tradizione arcana che ti conferisce capacità speciali legate a un certo tipo di magia."
+  },
+  {
+    "tipo": "abilità_classe",
+    "classe": "Mago",
+    "livello": 4,
+    "nome": "Miglioramento Caratteristiche (Mago 1)",
+    "effetto": "Primo aumento dei punteggi di caratteristica o talento."
+  },
+  {
+    "tipo": "abilità_classe",
+    "classe": "Mago",
+    "livello": 6,
+    "nome": "Capacità Tradizione Arcana (6° livello)",
+    "effetto": "Ottieni un’abilità intermedia dalla tua tradizione arcana."
+  },
+  {
+    "tipo": "abilità_classe",
+    "classe": "Mago",
+    "livello": 8,
+    "nome": "Miglioramento Caratteristiche (Mago 2)",
+    "effetto": "Secondo aumento dei punteggi di caratteristica o talento."
+  },
+  {
+    "tipo": "abilità_classe",
+    "classe": "Mago",
+    "livello": 10,
+    "nome": "Capacità Tradizione Arcana (10° livello)",
+    "effetto": "Ottieni una nuova capacità dalla tua tradizione, spesso di controllo o difensiva."
+  },
+  {
+    "tipo": "abilità_classe",
+    "classe": "Mago",
+    "livello": 12,
+    "nome": "Miglioramento Caratteristiche (Mago 3)",
+    "effetto": "Terzo aumento dei punteggi di caratteristica o talento."
+  },
+  {
+    "tipo": "abilità_classe",
+    "classe": "Mago",
+    "livello": 14,
+    "nome": "Capacità Tradizione Arcana (14° livello)",
+    "effetto": "Capacità avanzata della tua tradizione, molto potente e tematica."
+  },
+  {
+    "tipo": "abilità_classe",
+    "classe": "Mago",
+    "livello": 16,
+    "nome": "Miglioramento Caratteristiche (Mago 4)",
+    "effetto": "Quarto aumento dei punteggi di caratteristica o talento."
+  },
+  {
+    "tipo": "abilità_classe",
+    "classe": "Mago",
+    "livello": 18,
+    "nome": "Maestria Incantatoria (Spell Mastery)",
+    "effetto": "Scegli uno o due incantesimi di basso livello che puoi lanciare a volontà senza spendere slot."
+  },
+  {
+    "tipo": "abilità_classe",
+    "classe": "Mago",
+    "livello": 19,
+    "nome": "Miglioramento Caratteristiche (Mago 5)",
+    "effetto": "Quinto aumento dei punteggi di caratteristica o talento."
+  },
+  {
+    "tipo": "abilità_classe",
+    "classe": "Mago",
+    "livello": 20,
+    "nome": "Incantesimi Firmati (Signature Spells)",
+    "effetto": "Scegli due incantesimi di 3° livello che puoi lanciare senza spendere slot una volta per riposo breve o lungo."
+  },
+  {
+    "tipo": "abilità_classe",
+    "classe": "Ladro",
+    "livello": 1,
+    "nome": "Attacco Furtivo",
+    "effetto": "Una volta per turno aggiungi danni extra quando colpisci con un attacco d’arma se hai vantaggio o un alleato è in mischia col bersaglio."
+  },
+  {
+    "tipo": "abilità_classe",
+    "classe": "Ladro",
+    "livello": 1,
+    "nome": "Expertise (Ladro 1)",
+    "effetto": "Raddoppi il bonus di competenza in due abilità a tua scelta tra quelle in cui sei competente."
+  },
+  {
+    "tipo": "abilità_classe",
+    "classe": "Ladro",
+    "livello": 1,
+    "nome": "Gergo dei Ladri (Thieves' Cant)",
+    "effetto": "Conosci un linguaggio in codice fatto di segni, frasi e simboli usato dai criminali."
+  },
+  {
+    "tipo": "abilità_classe",
+    "classe": "Ladro",
+    "livello": 2,
+    "nome": "Azione Scaltra (Cunning Action)",
+    "effetto": "Puoi usare l’azione bonus in ogni tuo turno per Disimpegno, Scatto o Nasconderti."
+  },
+  {
+    "tipo": "abilità_classe",
+    "classe": "Ladro",
+    "livello": 3,
+    "nome": "Archetipo del Ladro (Sottoclasse)",
+    "effetto": "Scegli un archetipo (Assassino, Furto, Furfante Arcano ecc.) che definisce il tuo stile e ti dà capacità extra."
+  },
+  {
+    "tipo": "abilità_classe",
+    "classe": "Ladro",
+    "livello": 4,
+    "nome": "Miglioramento Caratteristiche (Ladro 1)",
+    "effetto": "Primo aumento dei punteggi di caratteristica o talento."
+  },
+  {
+    "tipo": "abilità_classe",
+    "classe": "Ladro",
+    "livello": 5,
+    "nome": "Schivata Prodigiosa (Uncanny Dodge)",
+    "effetto": "Usi la tua reazione per dimezzare i danni di un attacco che ti colpisce."
+  },
+  {
+    "tipo": "abilità_classe",
+    "classe": "Ladro",
+    "livello": 6,
+    "nome": "Expertise (Ladro 2)",
+    "effetto": "Raddoppi il bonus di competenza in altre due abilità a tua scelta."
+  },
+  {
+    "tipo": "abilità_classe",
+    "classe": "Ladro",
+    "livello": 7,
+    "nome": "Elusione (Evasion)",
+    "effetto": "Con un TS Des riuscito subisci 0 danni da effetti ad area che permettono TS Des per metà danno; se fallisci prendi solo metà danni."
+  },
+  {
+    "tipo": "abilità_classe",
+    "classe": "Ladro",
+    "livello": 8,
+    "nome": "Miglioramento Caratteristiche (Ladro 2)",
+    "effetto": "Secondo aumento dei punteggi di caratteristica o talento."
+  },
+  {
+    "tipo": "abilità_classe",
+    "classe": "Ladro",
+    "livello": 9,
+    "nome": "Capacità Archetipo (9° livello)",
+    "effetto": "Ottieni una capacità aggiuntiva legata al tuo archetipo."
+  },
+  {
+    "tipo": "abilità_classe",
+    "classe": "Ladro",
+    "livello": 10,
+    "nome": "Miglioramento Caratteristiche (Ladro 3)",
+    "effetto": "Terzo aumento dei punteggi di caratteristica o talento."
+  },
+  {
+    "tipo": "abilità_classe",
+    "classe": "Ladro",
+    "livello": 11,
+    "nome": "Talento Affidabile (Reliable Talent)",
+    "effetto": "Quando sei competente in una prova, tratti i risultati di d20 inferiori a 10 come se fossero 10."
+  },
+  {
+    "tipo": "abilità_classe",
+    "classe": "Ladro",
+    "livello": 12,
+    "nome": "Miglioramento Caratteristiche (Ladro 4)",
+    "effetto": "Quarto aumento dei punteggi di caratteristica o talento."
+  },
+  {
+    "tipo": "abilità_classe",
+    "classe": "Ladro",
+    "livello": 13,
+    "nome": "Capacità Archetipo (13° livello)",
+    "effetto": "Ottieni un’altra capacità dal tuo archetipo."
+  },
+  {
+    "tipo": "abilità_classe",
+    "classe": "Ladro",
+    "livello": 14,
+    "nome": "Senso Cieco (Blindsense)",
+    "effetto": "Percepisci creature nascoste o invisibili entro una breve distanza se puoi sentirle."
+  },
+  {
+    "tipo": "abilità_classe",
+    "classe": "Ladro",
+    "livello": 15,
+    "nome": "Mente Elusiva (Slippery Mind)",
+    "effetto": "Ottieni competenza nei tiri salvezza di Saggezza."
+  },
+  {
+    "tipo": "abilità_classe",
+    "classe": "Ladro",
+    "livello": 16,
+    "nome": "Miglioramento Caratteristiche (Ladro 5)",
+    "effetto": "Quinto aumento dei punteggi di caratteristica o talento."
+  },
+  {
+    "tipo": "abilità_classe",
+    "classe": "Ladro",
+    "livello": 17,
+    "nome": "Capacità Archetipo (17° livello)",
+    "effetto": "Capacità avanzata del tuo archetipo, di solito molto potente."
+  },
+  {
+    "tipo": "abilità_classe",
+    "classe": "Ladro",
+    "livello": 18,
+    "nome": "Inafferrabile (Elusive)",
+    "effetto": "Finché non sei incapacitato, gli attacchi contro di te non hanno mai vantaggio normalmente."
+  },
+  {
+    "tipo": "abilità_classe",
+    "classe": "Ladro",
+    "livello": 19,
+    "nome": "Miglioramento Caratteristiche (Ladro 6)",
+    "effetto": "Sesto aumento dei punteggi di caratteristica o talento."
+  },
+  {
+    "tipo": "abilità_classe",
+    "classe": "Ladro",
+    "livello": 20,
+    "nome": "Colpo di Fortuna (Stroke of Luck)",
+    "effetto": "Una volta per riposo puoi trasformare un attacco mancato in un colpito o un tiro fallito in un successo automatico."
+  },
+  {
+    "tipo": "incantesimo_sottoclasse",
+    "classe": "Chierico",
+    "sottoclasse": "Dominio della Guerra",
+    "livello_classe": 1,
+    "nome": "Favore Divino (Divine Favor)",
+    "livello_incantesimo": 1,
+    "effetto": "Incantesimo di dominio: sempre preparato, aggiunge danni radianti ai tuoi attacchi con arma."
+  },
+  {
+    "tipo": "incantesimo_sottoclasse",
+    "classe": "Chierico",
+    "sottoclasse": "Dominio della Guerra",
+    "livello_classe": 1,
+    "nome": "Scudo della Fede (Shield of Faith)",
+    "livello_incantesimo": 1,
+    "effetto": "Incantesimo di dominio: sempre preparato, conferisce +2 CA come bonus concentrato su una creatura."
+  },
+  {
+    "tipo": "incantesimo_sottoclasse",
+    "classe": "Chierico",
+    "sottoclasse": "Dominio della Guerra",
+    "livello_classe": 3,
+    "nome": "Arma Magica (Magic Weapon)",
+    "livello_incantesimo": 2,
+    "effetto": "Incantesimo di dominio: sempre preparato, rende magica un’arma e le dà bonus ai tiri per colpire e danni."
+  },
+  {
+    "tipo": "incantesimo_sottoclasse",
+    "classe": "Chierico",
+    "sottoclasse": "Dominio della Guerra",
+    "livello_classe": 3,
+    "nome": "Arma Spirituale (Spiritual Weapon)",
+    "livello_incantesimo": 2,
+    "effetto": "Incantesimo di dominio: sempre preparato, crea un’arma spirituale che colpisce come azione bonus."
+  },
+  {
+    "tipo": "incantesimo_sottoclasse",
+    "classe": "Chierico",
+    "sottoclasse": "Dominio della Guerra",
+    "livello_classe": 5,
+    "nome": "Mantello del Crociato (Crusader's Mantle)",
+    "livello_incantesimo": 3,
+    "effetto": "Incantesimo di dominio: sempre preparato, i tuoi alleati vicino a te infliggono danni radianti extra."
+  },
+  {
+    "tipo": "incantesimo_sottoclasse",
+    "classe": "Chierico",
+    "sottoclasse": "Dominio della Guerra",
+    "livello_classe": 5,
+    "nome": "Guardiani Spirituali (Spirit Guardians)",
+    "livello_incantesimo": 3,
+    "effetto": "Incantesimo di dominio: sempre preparato, aurea che rallenta i nemici e infligge danni radianti o necrotici."
+  },
+  {
+    "tipo": "incantesimo_sottoclasse",
+    "classe": "Chierico",
+    "sottoclasse": "Dominio della Guerra",
+    "livello_classe": 7,
+    "nome": "Libertà di Movimento (Freedom of Movement)",
+    "livello_incantesimo": 4,
+    "effetto": "Incantesimo di dominio: sempre preparato, rende il bersaglio quasi immune a rallentamenti e restrizioni di movimento."
+  },
+  {
+    "tipo": "incantesimo_sottoclasse",
+    "classe": "Chierico",
+    "sottoclasse": "Dominio della Guerra",
+    "livello_classe": 7,
+    "nome": "Pelle di Pietra (Stoneskin)",
+    "livello_incantesimo": 4,
+    "effetto": "Incantesimo di dominio: sempre preparato, conferisce resistenza ai danni contundenti, perforanti e taglienti non magici."
+  },
+  {
+    "tipo": "incantesimo_sottoclasse",
+    "classe": "Chierico",
+    "sottoclasse": "Dominio della Guerra",
+    "livello_classe": 9,
+    "nome": "Colonna di Fiamme (Flame Strike)",
+    "livello_incantesimo": 5,
+    "effetto": "Incantesimo di dominio: sempre preparato, colonna di fuoco e luce che infligge danni da fuoco e radianti in area."
+  },
+  {
+    "tipo": "incantesimo_sottoclasse",
+    "classe": "Chierico",
+    "sottoclasse": "Dominio della Guerra",
+    "livello_classe": 9,
+    "nome": "Blocca Mostri (Hold Monster)",
+    "livello_incantesimo": 5,
+    "effetto": "Incantesimo di dominio: sempre preparato, paralizza una creatura, permettendo colpi critici automatici in mischia."
+  },
+
+  {
+    "tipo": "abilità_sottoclasse",
+    "classe": "Chierico",
+    "sottoclasse": "Dominio della Guerra",
+    "livello_classe": 1,
+    "nome": "Competenze Bonus (Bonus Proficiencies)",
+    "effetto": "Ottieni competenza nelle armature pesanti e nelle armi marziali, rendendoti più efficace in prima linea."
+  },
+  {
+    "tipo": "abilità_sottoclasse",
+    "classe": "Chierico",
+    "sottoclasse": "Dominio della Guerra",
+    "livello_classe": 1,
+    "nome": "Sacerdote della Guerra (War Priest)",
+    "effetto": "Quando usi l’azione Attacco puoi effettuare, come azione bonus, un ulteriore attacco con arma alcune volte per riposo lungo."
+  },
+  {
+    "tipo": "abilità_sottoclasse",
+    "classe": "Chierico",
+    "sottoclasse": "Dominio della Guerra",
+    "livello_classe": 2,
+    "nome": "Canalizzare Divinità: Colpo Guidato (Guided Strike)",
+    "effetto": "Con Canalizzare Divinità aggiungi un grosso bonus (+10) a un tiro per colpire, dopo aver tirato ma prima di sapere se colpisce."
+  },
+  {
+    "tipo": "abilità_sottoclasse",
+    "classe": "Chierico",
+    "sottoclasse": "Dominio della Guerra",
+    "livello_classe": 6,
+    "nome": "Canalizzare Divinità: Benedizione del Dio della Guerra (War God's Blessing)",
+    "effetto": "Usi la tua reazione e Canalizzare Divinità per dare un grande bonus al tiro per colpire di un alleato vicino."
+  },
+  {
+    "tipo": "abilità_sottoclasse",
+    "classe": "Chierico",
+    "sottoclasse": "Dominio della Guerra",
+    "livello_classe": 8,
+    "nome": "Colpo Divino (Divine Strike)",
+    "effetto": "Una volta per turno aggiungi danni extra da arma (normalmente contundenti/taglienti/perforanti) agli attacchi con arma."
+  },
+  {
+    "tipo": "abilità_sottoclasse",
+    "classe": "Chierico",
+    "sottoclasse": "Dominio della Guerra",
+    "livello_classe": 17,
+    "nome": "Avatar della Battaglia (Avatar of Battle)",
+    "effetto": "Ottieni resistenza ai danni contundenti, perforanti e taglienti da armi non magiche, diventando estremamente duro da abbattere."
+  },
+   {
+    "tipo": "incantesimo_sottoclasse",
+    "classe": "Druido",
+    "sottoclasse": "Circolo della Terra – Foresta",
+    "livello_classe": 3,
+    "nome": "Pelle di Corteccia (Barkskin)",
+    "livello_incantesimo": 2,
+    "effetto": "Cerchio della Terra – Foresta: sempre preparato, imposta la CA minima del bersaglio a un valore fisso."
+  },
+  {
+    "tipo": "incantesimo_sottoclasse",
+    "classe": "Druido",
+    "sottoclasse": "Circolo della Terra – Foresta",
+    "livello_classe": 3,
+    "nome": "Camminare sui Muri (Spider Climb)",
+    "livello_incantesimo": 2,
+    "effetto": "Cerchio della Terra – Foresta: sempre preparato, permette di muoversi su superfici verticali e soffitti."
+  },
+  {
+    "tipo": "incantesimo_sottoclasse",
+    "classe": "Druido",
+    "sottoclasse": "Circolo della Terra – Foresta",
+    "livello_classe": 5,
+    "nome": "Evoca Fulmine (Call Lightning)",
+    "livello_incantesimo": 3,
+    "effetto": "Cerchio della Terra – Foresta: sempre preparato, nuvola temporalesca che scaglia fulmini a ripetizione."
+  },
+  {
+    "tipo": "incantesimo_sottoclasse",
+    "classe": "Druido",
+    "sottoclasse": "Circolo della Terra – Foresta",
+    "livello_classe": 5,
+    "nome": "Crescita delle Piante (Plant Growth)",
+    "livello_incantesimo": 3,
+    "effetto": "Cerchio della Terra – Foresta: sempre preparato, rallenta pesantemente il movimento in una vasta area di vegetazione."
+  },
+  {
+    "tipo": "incantesimo_sottoclasse",
+    "classe": "Druido",
+    "sottoclasse": "Circolo della Terra – Foresta",
+    "livello_classe": 7,
+    "nome": "Divinazione (Divination)",
+    "livello_incantesimo": 4,
+    "effetto": "Cerchio della Terra – Foresta: sempre preparato, poni una domanda su eventi futuri/prossimi alla tua divinità o forze naturali."
+  },
+  {
+    "tipo": "incantesimo_sottoclasse",
+    "classe": "Druido",
+    "sottoclasse": "Circolo della Terra – Foresta",
+    "livello_classe": 7,
+    "nome": "Libertà di Movimento (Freedom of Movement)",
+    "livello_incantesimo": 4,
+    "effetto": "Cerchio della Terra – Foresta: sempre preparato, il bersaglio ignora quasi tutte le condizioni che bloccano o rallentano."
+  },
+  {
+    "tipo": "incantesimo_sottoclasse",
+    "classe": "Druido",
+    "sottoclasse": "Circolo della Terra – Foresta",
+    "livello_classe": 9,
+    "nome": "Comunione con la Natura (Commune with Nature)",
+    "livello_incantesimo": 5,
+    "effetto": "Cerchio della Terra – Foresta: sempre preparato, apprendi informazioni chiave sull’area naturale circostante."
+  },
+  {
+    "tipo": "incantesimo_sottoclasse",
+    "classe": "Druido",
+    "sottoclasse": "Circolo della Terra – Foresta",
+    "livello_classe": 9,
+    "nome": "Passo tra gli Alberi (Tree Stride)",
+    "livello_incantesimo": 5,
+    "effetto": "Cerchio della Terra – Foresta: sempre preparato, ti muovi rapidamente tra alberi usandoli come portali naturali."
+  },
+
+  {
+    "tipo": "abilità_sottoclasse",
+    "classe": "Druido",
+    "sottoclasse": "Circolo della Terra – Foresta",
+    "livello_classe": 2,
+    "nome": "Trucchetto Bonus (Bonus Cantrip)",
+    "effetto": "Ottieni un trucchetto da druido extra oltre a quelli normali concessi dalla classe."
+  },
+  {
+    "tipo": "abilità_sottoclasse",
+    "classe": "Druido",
+    "sottoclasse": "Circolo della Terra – Foresta",
+    "livello_classe": 2,
+    "nome": "Recupero Naturale (Natural Recovery)",
+    "effetto": "Durante un riposo breve puoi recuperare alcuni slot incantesimo spesi, fino a un totale pari a metà del tuo livello da druido."
+  },
+  {
+    "tipo": "abilità_sottoclasse",
+    "classe": "Druido",
+    "sottoclasse": "Circolo della Terra – Foresta",
+    "livello_classe": 6,
+    "nome": "Passo del Terreno (Land's Stride)",
+    "effetto": "Ti muovi senza rallentamenti attraverso terreno difficile non magico e hai vantaggi nel resistere a effetti che bloccano il movimento."
+  },
+  {
+    "tipo": "abilità_sottoclasse",
+    "classe": "Druido",
+    "sottoclasse": "Circolo della Terra – Foresta",
+    "livello_classe": 10,
+    "nome": "Difesa della Natura (Nature's Ward)",
+    "effetto": "Ottieni immunità o resistenze a charme/spavento di creature naturali come elementali e folletti, e a certe condizioni."
+  },
+  {
+    "tipo": "abilità_sottoclasse",
+    "classe": "Druido",
+    "sottoclasse": "Circolo della Terra – Foresta",
+    "livello_classe": 14,
+    "nome": "Santuario della Natura (Nature's Sanctuary)",
+    "effetto": "Bestie e piante ostili hanno difficoltà ad attaccarti: spesso devono superare un tiro salvezza o scegliere un altro bersaglio."
+  },
+   {
+    "tipo": "abilità_sottoclasse",
+    "classe": "Mago",
+    "sottoclasse": "Scuola di Invocazione",
+    "livello_classe": 2,
+    "nome": "Invocazione Savant (Evocation Savant)",
+    "effetto": "Copiare incantesimi di invocazione nel grimorio costa meno tempo e oro del normale."
+  },
+  {
+    "tipo": "abilità_sottoclasse",
+    "classe": "Mago",
+    "sottoclasse": "Scuola di Invocazione",
+    "livello_classe": 2,
+    "nome": "Plasmare Incantesimi (Sculpt Spells)",
+    "effetto": "Quando lanci incantesimi di invocazione ad area puoi proteggere alcuni alleati, che non subiscono danni o ne subiscono meno."
+  },
+  {
+    "tipo": "abilità_sottoclasse",
+    "classe": "Mago",
+    "sottoclasse": "Scuola di Invocazione",
+    "livello_classe": 6,
+    "nome": "Trucchetti Potenziati (Potent Cantrip)",
+    "effetto": "I tuoi trucchetti che infliggono danni fanno comunque danno dimezzato alle creature che superano il tiro salvezza."
+  },
+  {
+    "tipo": "abilità_sottoclasse",
+    "classe": "Mago",
+    "sottoclasse": "Scuola di Invocazione",
+    "livello_classe": 10,
+    "nome": "Invocazione Potenziata (Empowered Evocation)",
+    "effetto": "Aggiungi il tuo modificatore di Intelligenza a un tiro danno di ogni incantesimo di invocazione che lanci."
+  },
+  {
+    "tipo": "abilità_sottoclasse",
+    "classe": "Mago",
+    "sottoclasse": "Scuola di Invocazione",
+    "livello_classe": 14,
+    "nome": "Sovraccarico (Overchannel)",
+    "effetto": "Puoi massimizzare i danni di un incantesimo di 1°-5° livello che lanci; usi ripetuti nello stesso giorno ti infliggono danni necrotici."
+  },
+   {
+    "tipo": "abilità_sottoclasse",
+    "classe": "Ladro",
+    "sottoclasse": "Assassino",
+    "livello_classe": 3,
+    "nome": "Competenze Bonus (Bonus Proficiencies)",
+    "effetto": "Ottieni competenza nel kit del travestimento e nel kit del veleno, migliorando infiltrazione e omicidi silenziosi."
+  },
+  {
+    "tipo": "abilità_sottoclasse",
+    "classe": "Ladro",
+    "sottoclasse": "Assassino",
+    "livello_classe": 3,
+    "nome": "Assassinio (Assassinate)",
+    "effetto": "Hai vantaggio contro creature che agiscono dopo di te nel primo turno; se colpisci una creatura sorpresa, il colpo è critico automatico."
+  },
+  {
+    "tipo": "abilità_sottoclasse",
+    "classe": "Ladro",
+    "sottoclasse": "Assassino",
+    "livello_classe": 9,
+    "nome": "Competenza d’Infiltrazione (Infiltration Expertise)",
+    "effetto": "Puoi creare identità di copertura dettagliate e usarle per infiltrarti in organizzazioni o luoghi ostili."
+  },
+  {
+    "tipo": "abilità_sottoclasse",
+    "classe": "Ladro",
+    "sottoclasse": "Assassino",
+    "livello_classe": 13,
+    "nome": "Impostore (Impostor)",
+    "effetto": "Imiti perfettamente voce, manierismi e scrittura di un’altra persona dopo averla studiata, rendendo più facile impersonarla."
+  },
+  {
+    "tipo": "abilità_sottoclasse",
+    "classe": "Ladro",
+    "sottoclasse": "Assassino",
+    "livello_classe": 17,
+    "nome": "Colpo di Morte (Death Strike)",
+    "effetto": "Quando colpisci una creatura sorpresa, può dover tirare TS; se fallisce, i danni dell’attacco (compreso furtivo) vengono raddoppiati."
+  }
+  ];
+	
+	// 📖 Libreria delle bestie note di Padez (forma selvatica – livello 3)
+    const padezBeasts = [
+      {
+        id: 'wolf',
+        nome: 'Lupo (Wolf)',
+        ruolo: 'Picchiatore da mischia, abbattimento, fiuto',
+        cr: '1/4',
+        ambiente: 'boschi/colline',
+        ac: 13,
+        pf: '11 (2d8+2)',
+        velocita: '12 m',
+        note: 'Morso +4 (2d4+2 perforanti), TS Forza CD 11 o il bersaglio va Prono. Vantaggio a Percezione basata sull’olfatto; tattica di branco.'
+      },
+      {
+        id: 'boar',
+        nome: 'Cinghiale (Boar)',
+        ruolo: 'Caricatore resistente',
+        cr: '1/4',
+        ambiente: 'boschi/colline',
+        ac: 11,
+        pf: '11 (2d8+2)',
+        velocita: '12 m',
+        note: 'Zanne +3 (1d6+1). Carica: se ti muovi di almeno 6 m in linea retta e colpisci, +1d6 danni extra e TS Forza CD 11 o il bersaglio va Prono.'
+      },
+      {
+        id: 'mastiff',
+        nome: 'Mastino (Mastiff)',
+        ruolo: 'Picchiatore mobile',
+        cr: '1/8',
+        ambiente: 'boschi/colline, strade',
+        ac: 12,
+        pf: '5 (1d8+1)',
+        velocita: '12 m',
+        note: 'Morso +3 (1d6+1). Può buttare a terra creature Piccole/Medie su TS Forza fallito. Vista e udito acuti (vantaggio a Percezione).'
+      },
+      {
+        id: 'giant_badger',
+        nome: 'Tasso Gigante (Giant Badger)',
+        ruolo: 'Danni decenti, scavatore',
+        cr: '1/4',
+        ambiente: 'tane, boschi/colline',
+        ac: 10,
+        pf: '13 (2d8+4)',
+        velocita: '9 m, scavare 3 m',
+        note: 'Multiattacco: Morso +3 (1d6+1) e Artigli +3 (2d4+1). Utile per scavare gallerie o buche.'
+      },
+      {
+        id: 'elk',
+        nome: 'Cervo (Elk)',
+        ruolo: 'Mobilità, carica',
+        cr: '1/4',
+        ambiente: 'radure, colline',
+        ac: 10,
+        pf: '13 (2d10+2)',
+        velocita: '18 m',
+        note: 'Corna +5 (1d6+3). Carica: se ti muovi di almeno 6 m e colpisci, +2d6 danni extra e TS Forza CD 13 o il bersaglio va Prono.'
+      }
+    ];
+
+    // Personaggi: array inizialmente vuoto.
+    // Verrà popolato automaticamente dai file JSON (repo) o tramite import manuale.
+    let characters = [];
+    let currentCharacterIndex = 0;
+	
+	function getFirstPlayableCharacterIndex() {
+  if (!Array.isArray(characters)) return 0;
+  const idx = characters.findIndex(c => c && c.id !== 'partyChest');
+  return idx === -1 ? 0 : idx;
+}
+
+// inizializza sul primo personaggio “vero”
+currentCharacterIndex = getFirstPlayableCharacterIndex();
+
+function normalizeCharacterMagic(ch) {
+  if (!ch) return ch;
+
+  function normalizeField(value) {
+    if (Array.isArray(value)) {
+      return value
+        .map(v => {
+          if (typeof v === 'string') return v.trim();
+          if (v && typeof v === 'object' && v.nome) return String(v.nome).trim();
+          return '';
+        })
+        .filter(Boolean)
+        .join(', ');
+    }
+    if (value == null) return '';
+    return String(value);
+  }
+
+  ch.cantrips = normalizeField(ch.cantrips);
+  ch.prepared = normalizeField(ch.prepared);
+
+  return ch;
+}
+
+// Normalizza sempre le magie lette dal file personaggi (cantrips/prepared)
+characters = (characters || []).map(normalizeCharacterMagic);
+
+function downloadJSON(obj, filename) {
+  const blob = new Blob([JSON.stringify(obj, null, 2)], { type: 'application/json' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = filename;
+  a.click();
+  URL.revokeObjectURL(url);
+}
+
+function setupTabs() {
+  const buttons = document.querySelectorAll('.tab-button');
+  const panels = document.querySelectorAll('.tab-panel');
+
+  buttons.forEach(btn => {
+    btn.addEventListener('click', () => {
+      const tabId = btn.dataset.tab;
+      buttons.forEach(b => b.classList.toggle('active', b === btn));
+      panels.forEach(p => p.classList.toggle('active', p.id === 'tab-' + tabId));
+    });
+  });
+}
+
+function renderCharacterSelector() {
+  const select = document.getElementById('characterSelect');
+  if (!select) return;
+
+  select.innerHTML = '';
+
+  characters.forEach((ch, index) => {
+    if (!ch || ch.id === 'partyChest') return;
+    const opt = document.createElement('option');
+    opt.value = String(index);
+    const level = ch.classLevel || ch.class_level || ch.level || '';
+    opt.textContent = (ch.name || 'Senza nome') + (level ? ' – ' + level : '');
+    select.appendChild(opt);
+  });
+
+  if (!characters.length || select.options.length === 0) {
+    const opt = document.createElement('option');
+    opt.value = '';
+    opt.textContent = 'Nessun personaggio caricato';
+    select.appendChild(opt);
+    select.disabled = true;
+  } else {
+    select.disabled = false;
+    const validIndex = currentCharacterIndex >= 0 && currentCharacterIndex < characters.length
+      ? currentCharacterIndex
+      : getFirstPlayableCharacterIndex();
+    select.value = String(validIndex);
+  }
+
+  select.addEventListener('change', () => {
+    const idx = Number(select.value);
+    if (!isNaN(idx)) {
+      currentCharacterIndex = idx;
+      renderCharacterDetail();
+    }
+  });
+}
+
+function getCharacterClassName(ch) {
+  if (!ch) return '';
+  if (ch.className) return ch.className;
+  if (ch.class_level) return ch.class_level.split(' ')[0];
+  if (ch.classLevel) return ch.classLevel.split(' ')[0];
+  if (ch.classe) return ch.classe;
+  return '';
+}
+
+// Legge il livello numerico dal campo classLevel (es. "Ladro 3 ...")
+function getCharacterLevel(ch) {
+  if (!ch || !ch.classLevel) return null;
+  const m = String(ch.classLevel).match(/(\d+)/);
+  if (!m) return null;
+  const lvl = parseInt(m[1], 10);
+  return isNaN(lvl) ? null : lvl;
+}
+
+// Determina se una classe è "magica" (ha incantesimi veri e propri)
+function isMagicalClassName(name) {
+  if (!name) return false;
+  const n = String(name).toLowerCase();
+
+  return (
+    n.includes('mago') ||
+    n.includes('druido') ||
+    n.includes('chierico') ||
+    n.includes('stregone') ||
+    n.includes('warlock') ||
+    n.includes('bardo') ||
+    n.includes('paladino') ||
+    n.includes('ranger')
+  );
+}
+
+function renderLibrary() {
+  const container = document.getElementById('libraryList');
+  if (!container) return;
+
+  const tipoFilter = document.getElementById('filterTipo')?.value || '';
+  const classeFilter = document.getElementById('filterClasse')?.value || '';
+  const livelloFilter = document.getElementById('filterLivello')?.value || '';
+  const searchFilter = (document.getElementById('filterSearch')?.value || '').toLowerCase();
+
+  let items = libraryItems.slice();
+
+  items = items.filter(it => {
+    if (tipoFilter && String(it.tipo || '').toLowerCase() !== tipoFilter.toLowerCase()) return false;
+    if (classeFilter && String(it.classe || '') !== classeFilter) return false;
+    if (livelloFilter !== '') {
+      const lv = (it.livello != null) ? String(it.livello) : '';
+      if (lv !== livelloFilter) return false;
+    }
+    if (searchFilter) {
+      const hay = (String(it.nome || '') + ' ' + String(it.effetto || '')).toLowerCase();
+      if (!hay.includes(searchFilter)) return false;
+    }
+    return true;
+  });
+
+  if (!items.length) {
+    container.innerHTML = '<p class="status">Nessun elemento trovato con questi filtri.</p>';
+    return;
+  }
+
+  const html = items.map(it => {
+    const tipo = it.tipo || '';
+    const classe = it.classe || '';
+    const livello = it.livello != null ? it.livello : '';
+    const nome = it.nome || '—';
+    const txc = it.txc_o_ts || '';
+    const danni = it.danni || '';
+    const effetto = it.effetto || '';
+
+    return `
+      <div class="card mb-sm">
+        <div class="card-header">
+          <div class="title-left">
+            <span>${nome}</span>
+          </div>
+          <div class="row">
+            ${tipo ? `<span class="pill"><span class="dot"></span><span>${tipo}</span></span>` : ''}
+            ${classe ? `<span class="badge"><span class="dot"></span><span>${classe}</span></span>` : ''}
+          </div>
+        </div>
+        <div class="card-body">
+          <div class="row mb-sm">
+            <div class="badge">
+              <span class="dot"></span>
+              <strong>Livello:</strong>&nbsp;<span>${livello === '' ? '-' : livello}</span>
+            </div>
+            ${txc ? `<span class="chip-tag">TxC/TS: ${txc}</span>` : ''}
+            ${danni ? `<span class="chip-tag">Danni: ${danni}</span>` : ''}
+          </div>
+          <p style="margin:0;font-size:.85rem;">${effetto || ''}</p>
+        </div>
+      </div>
+    `;
+  }).join('');
+
+  container.innerHTML = html;
+}
+
+function updateLibraryFilters() {
+  // placeholder: se servirà, potremo arricchire in futuro
+}
+
+function findSpellInLibraryByName(name) {
+      if (!name) return null;
+      const lower = String(name).trim().toLowerCase();
+      return libraryItems.find(sp => String(sp.nome || '').trim().toLowerCase() === lower) || null;
+    }
+
+// Spezza le liste di incantesimi sia per virgola che per a capo
+    // ed elimina righe tipo "Incantesimi di Dominio sempre preparati:"
+    function splitSpellList(raw) {
+      return String(raw || '')
+        .split(/[\n,]+/)         // separa su newline O virgola
+        .map(s => s.trim())
+        .filter(Boolean)
+        .filter(s => !/^incantesimi di dominio/i.test(s));
+    }
+
+function renderCharacterDetail() {
+  const container = document.getElementById('characterDetail');
+  container.innerHTML = '';
+  if (!characters.length) return;
+
+  // se per qualche motivo è finito su partyChest, spostalo al primo PG valido
+  if (characters[currentCharacterIndex] && characters[currentCharacterIndex].id === 'partyChest') {
+    currentCharacterIndex = getFirstPlayableCharacterIndex();
+  }
+
+  const ch = characters[currentCharacterIndex];
+  if (!ch) return;
+
+  const stats = ch.stats || {};
+  const saves = ch.saves || {};
+  const skills = ch.skills || {};
+  const attacks = ch.attacks || [];
+  const maxAttacks = 10;
+
+  const statsHtml = Object.entries(stats).map(([k, v]) =>
+    '<div class="stat">' +
+      '<span class="label">' + k.toUpperCase() + '</span>' +
+      '<input type="text" data-group="stats" data-key="' + k + '" value="' + (v ?? '') + '" />' +
+    '</div>'
+  ).join('');
+
+  const savesHtml = Object.entries(saves).map(([k, v]) =>
+    '<div class="stat">' +
+      '<span class="label">' + k.toUpperCase() + '</span>' +
+      '<input type="text" data-group="saves" data-key="' + k + '" value="' + (v ?? '') + '" />' +
+    '</div>'
+  ).join('');
+
+  const skillEntries = [
+    ['atletica','Atletica'],
+    ['acrobazia','Acrobazia'],
+    ['rapidita','Rapidità di Mano'],
+    ['furtivita','Furtività'],
+    ['arcana','Arcana'],
+    ['indagare','Indagare'],
+    ['natura','Natura'],
+    ['religione','Religione'],
+    ['storia','Storia'],
+    ['addestrare','Addestrare Animali'],
+    ['intuizione','Intuizione'],
+    ['medicina','Medicina'],
+    ['percezione','Percezione'],
+    ['sopravvivenza','Sopravvivenza'],
+    ['raggirare','Raggirare'],
+    ['intimidire','Intimidire'],
+    ['intrattenere','Intrattenere'],
+    ['persuasione','Persuasione'],
+  ];
+
+  const skillHtml = skillEntries.map(([key, label]) => {
+    return `
+      <div class="skill-row">
+        <span>${label}</span>
+        <input type="text" data-group="skills" data-key="${key}" value="${skills[key] ?? ''}" />
+      </div>
+    `;
+  }).join('');
+
+  const paddedAttacks = attacks.slice();
+  while (paddedAttacks.length < maxAttacks) {
+    paddedAttacks.push({ nome: '', txc: '', danni: '', note: '' });
+  }
+
+  const attacksHtml = paddedAttacks.map((a, i) => {
+    return (
+      '<tr>' +
+        '<td><input type="text" data-att-index="' + i + '" data-att-field="nome" value="' + (a.nome || '') + '"></td>' +
+        '<td><input type="text" data-att-index="' + i + '" data-att-field="txc" value="' + (a.txc || '') + '"></td>' +
+        '<td><input type="text" data-att-index="' + i + '" data-att-field="danni" value="' + (a.danni || '') + '"></td>' +
+        '<td><input type="text" data-att-index="' + i + '" data-att-field="note" value="' + (a.note || '') + '"></td>' +
+      '</tr>'
+    );
+  }).join('');
+
+  const charClass = getCharacterClassName(ch) || '—';
+  const isMagical = isMagicalClassName(charClass);
+
+  // --- magie dal personaggio ---
+  const cantripNames = splitSpellList(ch.cantrips);
+  const preparedNames = splitSpellList(ch.prepared);
+
+  const cantripRowsHtml = (cantripNames.length
+    ? cantripNames.map((n) => {
+        const sp = findSpellInLibraryByName(n);
+        const lvl = sp && (sp.livello !== undefined && sp.livello !== null && sp.livello !== '') ? sp.livello : 0;
+        const txc = sp && sp.txc_o_ts || '';
+        const danni = sp && sp.danni || '';
+        const effetto = sp && sp.effetto || '';
+        return (
+          '<tr>' +
+            '<td>' + n + '</td>' +
+            '<td>' + (lvl || '-') + '</td>' +
+            '<td>' + (txc || '-') + '</td>' +
+            '<td>' + (danni || '-') + '</td>' +
+            '<td>' + (effetto || '') + '</td>' +
+          '</tr>'
+        );
+      }).join('')
+    : '<tr><td colspan="5"><span class="status">Nessun trucchetto.</span></td></tr>'
+  );
+
+  const preparedRowsHtml = (preparedNames.length
+    ? preparedNames.map((n, idx) => {
+        const sp = findSpellInLibraryByName(n) || {};
+        const hasLvl = sp.livello !== undefined && sp.livello !== null && sp.livello !== '';
+        const lvl = hasLvl ? sp.livello : '';
+        const txc = sp.txc_o_ts || '';
+        const danni = sp.danni || '';
+        const effetto = sp.effetto || '';
+
+        return (
+          '<tr>' +
+            '<td>' + n + '</td>' +
+            '<td>' + (lvl || '-') + '</td>' +
+            '<td>' + (txc || '-') + '</td>' +
+            '<td>' + (danni || '-') + '</td>' +
+            '<td>' + (effetto || '') + '</td>' +
+            '<td><button type="button" class="btn secondary tiny" data-remove-prepared-index="' + idx + '">✖</button></td>' +
+          '</tr>'
+        );
+      }).join('')
+    : '<tr><td colspan="6"><span class="status">Nessun incantesimo preparato.</span></td></tr>'
+  );
+
+  // 🔹 Se è Padez, mostra tabella bestie
+  const isPadez =
+    (ch.id && ch.id.toLowerCase() === 'padez') ||
+    (ch.name && ch.name.toLowerCase().includes('padez'));
+
+  const beastsSectionHtml = isPadez && Array.isArray(padezBeasts) && padezBeasts.length
+    ? (`
+    <div class="line"></div>
+
+    <div class="section-title">
+      <span>Forme Selvatiche – Bestie note di Padez</span>
+      <small>CR ≤ 1/4, niente volo/nuoto, boschi/colline</small>
+    </div>
+    <table class="mini-table mb-sm">
+      <thead>
+        <tr>
+          <th>Bestia</th>
+          <th>Ruolo</th>
+          <th>CR</th>
+          <th>CA</th>
+          <th>PF</th>
+          <th>Vel.</th>
+          <th>Note</th>
+        </tr>
+      </thead>
+      <tbody>
+        ${padezBeasts.map(b => `
+          <tr>
+            <td>${b.nome}</td>
+            <td>${b.ruolo || ''}</td>
+            <td>${b.cr || ''}</td>
+            <td>${b.ac ?? ''}</td>
+            <td>${b.pf || ''}</td>
+            <td>${b.velocita || ''}</td>
+            <td>${b.note || ''}</td>
+          </tr>
+        `).join('')}
+      </tbody>
+    </table>
+    `)
+    : '';
+
+  // 🔹 Sezione INCANTESIMI & TRUCCHETTI – solo per classi magiche
+  const magicSectionHtml = isMagical ? (`
+    <div class="line"></div>
+
+    <div class="section-title">
+      <span>Incantesimi & Trucchetti</span>
+      <small>Classe rilevata: ${charClass || '—'}</small>
+    </div>
+
+    <div class="row mb-sm">
+      <div class="field grow">
+        <label>Slot incantesimo (testo libero)</label>
+        <textarea data-field="slots" placeholder="Esempio: &quot;Liv1: 4/4, Liv2: 2/2&quot;">${ch.slots || ''}</textarea>
+      </div>
+      <div class="field">
+        <label>Note incantesimi</label>
+        <textarea data-field="spellNotes" placeholder="Note varie...">${ch.spellNotes || ''}</textarea>
+      </div>
+    </div>
+
+    <div class="row mb-sm">
+      <div class="grow">
+        <div class="section-title">
+          <span>Trucchetti Conosciuti</span>
+          <small>Nome + dati da database</small>
+        </div>
+        <table class="mini-table">
+          <thead>
+            <tr>
+              <th>Nome</th>
+              <th>Liv.</th>
+              <th>TxC / TS</th>
+              <th>Danni</th>
+              <th>Effetto</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${cantripRowsHtml}
+          </tbody>
+        </table>
+        <div class="mt-sm">
+          <button class="btn tiny secondary" id="addCantripRowBtn" type="button">➕ Aggiungi trucchetto</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="row mb-sm">
+      <div class="grow">
+        <div class="section-title">
+          <span>Incantesimi Preparati</span>
+          <small>Nome + dati da database</small>
+        </div>
+        <table class="mini-table">
+          <thead>
+            <tr>
+              <th>Nome</th>
+              <th>Liv.</th>
+              <th>TxC / TS</th>
+              <th>Danni</th>
+              <th>Effetto</th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody>
+            ${preparedRowsHtml}
+          </tbody>
+        </table>
+        <div class="mt-sm">
+          <button class="btn tiny secondary" id="addPreparedRowBtn" type="button">➕ Aggiungi incantesimo preparato</button>
+        </div>
+      </div>
+    </div>
+  `) : '';
+
+  // 🔹 Sezione ABILITÀ DI CLASSE / SOTTOCLASSE per tutti i PG (utile soprattutto per le classi non magiche)
+  const classLevelStr = ch.classLevel || ch.class_level || '';
+  let livelloGlobale = 0;
+  const match = classLevelStr.match(/(\d+)/);
+  if (match) livelloGlobale = Number(match[1]) || 0;
+
+  const charAbilities = classAbilitiesDB.filter(a => {
+  if (a.classe && charClass && a.classe.toLowerCase() !== charClass.toLowerCase()) return false;
+
+  const lvlUnlock =
+    (a.livello_sblocco ?? a.livello_classe ?? a.livello ?? 0);
+
+  if (lvlUnlock > livelloGlobale) return false;
+  return true;
+});
+
+  const classAbilitiesSectionHtml = charAbilities.length ? (`
+    <div class="line"></div>
+
+    <div class="section-title">
+      <span>Abilità di classe e sottoclasse</span>
+      <small>Sbloccate fino al livello attuale</small>
+    </div>
+    <table class="mini-table mb-sm">
+      <thead>
+        <tr>
+          <th>Nome</th>
+          <th>Liv.</th>
+          <th>Sottoclasse</th>
+          <th>Descrizione</th>
+        </tr>
+      </thead>
+      <tbody>
+        ${charAbilities.map(a => {
+  const lvl =
+    (a.livello_sblocco ?? a.livello_classe ?? a.livello ?? '-');
+  const desc = a.descrizione || a.effetto || '';
+
+  return `
+    <tr>
+      <td>${a.nome}</td>
+      <td>${lvl}</td>
+      <td>${a.sottoclasse || '-'}</td>
+      <td>${desc}</td>
+    </tr>
+  `;
+}).join('')}
+      </tbody>
+    </table>
+  `) : '';
+
+  // Bottone gestore incantesimi da DB solo per classi magiche
+  const spellManagerButtonHtml = isMagical ? `
+        <div class="mt-sm">
+          <button class="btn tiny secondary" id="openPreparedFromDbBtn" type="button" title="Gestisci incantesimi preparati dal database">
+            📚 Gestisci preparati da DB
+          </button>
+        </div>
+  ` : '';
+
+  const html = `
+    <div class="avatar-row mb-sm">
+      <div class="avatar ${ch.image ? '' : 'placeholder'}" style="${ch.image ? 'background-image:url(' + ch.image + ');' : ''}">
+        ${ch.image ? '' : '<span>🧙‍♂️</span>'}
+      </div>
+      <div class="avatar-info">
+        <h2>${ch.name || 'Senza nome'}</h2>
+        <div class="meta">
+          <span>${ch.classLevel || ch.class_level || ''}</span>
+          ${ch.exp ? ' • <strong>EXP:</strong> ' + ch.exp : ''}
+        </div>
+        <div class="chips">
+          <span class="chip">CA: ${ch.ac || '-'}</span>
+          <span class="chip">PF: ${ch.hp || '-'}</span>
+          <span class="chip">Iniziativa: ${ch.initiative || ch.init || '-'}</span>
+          <span class="chip">Velocità: ${ch.speed || '-'}</span>
+        </div>
+        ${spellManagerButtonHtml}
+      </div>
+    </div>
+
+    <div class="line"></div>
+
+    <div class="section-title">
+      <span>Statistiche e Tiri Salvezza</span>
+    </div>
+    <div class="stat-grid mb-sm">
+      ${statsHtml}
+    </div>
+    <div class="stat-grid mb-sm">
+      ${savesHtml}
+    </div>
+
+    <div class="section-title">
+      <span>Abilità</span>
+    </div>
+    <div class="skill-grid mb-sm">
+      ${skillHtml}
+    </div>
+
+    ${magicSectionHtml}
+    ${classAbilitiesSectionHtml}
+    ${beastsSectionHtml}
+
+    <div class="line"></div>
+
+    <div class="section-title">
+      <span>Attacchi</span>
+    </div>
+    <table class="mini-table mb-sm">
+      <thead>
+        <tr>
+          <th>Nome</th>
+          <th>TxC</th>
+          <th>Danni</th>
+          <th>Note</th>
+        </tr>
+      </thead>
+      <tbody>
+        ${attacksHtml}
+      </tbody>
+    </table>
+
+    <div class="line"></div>
+
+    <div class="section-title">
+      <span>Inventario & Cassa Comune</span>
+    </div>
+    <div class="inventory-columns">
+      <div>
+        <h4 style="margin:.2rem 0;">Inventario personale</h4>
+        <table class="inventory-table">
+          <thead>
+            <tr>
+              <th>Oggetto</th>
+              <th>Quantità / Note</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Inventario</td>
+              <td><textarea data-field="inventory">${ch.inventory || ''}</textarea></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <div>
+        <h4 style="margin:.2rem 0;">Cassa comune</h4>
+        <table class="inventory-table">
+          <tbody>
+            <tr>
+              <th>Oro totale</th>
+              <td><input type="text" data-party-field="gold" value=""></td>
+            </tr>
+            <tr>
+              <th>Tiene la cassa</th>
+              <td><input type="text" data-party-field="holder" value=""></td>
+            </tr>
+          </tbody>
+        </table>
+        <p class="status mt-sm">
+          La cassa comune è condivisa tra tutti i PG. Viene salvata nel JSON con id "partyChest".
+        </p>
+      </div>
+    </div>
+  `;
+
+  container.innerHTML = html;
+  attachCharacterDetailListeners();
+  syncPartyChestFields();
+}
+
+function syncPartyChestFields() {
+  const partyChest = characters.find(c => c && c.id === 'partyChest');
+  const goldInput = document.querySelector('input[data-party-field="gold"]');
+  const holderInput = document.querySelector('input[data-party-field="holder"]');
+
+  if (!goldInput || !holderInput) return;
+
+  if (!partyChest) {
+    goldInput.value = '';
+    holderInput.value = '';
+    return;
+  }
+
+  goldInput.value = partyChest.gold || '';
+  holderInput.value = partyChest.holder || '';
+}
+
+function renderClassAbilitiesTab() {
+  const container = document.getElementById('classAbilitiesContent');
+  if (!container) return;
+
+  if (!characters.length) {
+    container.innerHTML = '<p class="status">Nessun personaggio caricato. Carica un file JSON/Excel per iniziare.</p>';
+    return;
+  }
+
+  const cards = [];
+
+  characters.forEach(ch => {
+    if (!ch || ch.id === 'partyChest') return;
+    const name = ch.name || 'Senza nome';
+    const classLevelStr = ch.classLevel || ch.class_level || '';
+    const charClass = getCharacterClassName(ch);
+    let livelloGlobale = 0;
+    const match = classLevelStr.match(/(\d+)/);
+    if (match) livelloGlobale = Number(match[1]) || 0;
+
+    const classAbilities = classAbilitiesDB.filter(a => {
+  if (a.classe && charClass && a.classe.toLowerCase() !== charClass.toLowerCase()) return false;
+
+  const lvlUnlock =
+    (a.livello_sblocco ?? a.livello_classe ?? a.livello ?? 0);
+
+  if (lvlUnlock > livelloGlobale) return false;
+  return true;
+});
+
+    if (!classAbilities.length) return;
+
+    const listHtml = classAbilities.map(a => {
+  const lvl =
+    (a.livello_sblocco ?? a.livello_classe ?? a.livello ?? '?');
+  const desc = a.descrizione || a.effetto || '';
+
+  return `
+    <div class="class-card">
+      <div class="class-card-header">
+        <div class="class-card-title">${a.nome}</div>
+        <div class="class-card-tags">
+          <span class="tag">Livello ${lvl}</span>
+          ${a.sottoclasse ? `<span class="tag">${a.sottoclasse}</span>` : ''}
+        </div>
+      </div>
+      <div class="class-card-body">
+        <p style="margin:0;">${desc}</p>
+      </div>
+    </div>
+  `;
+}).join('');
+
+    const cardHtml = `
+      <div class="card mb-sm">
+        <div class="card-header">
+          <div class="title-left">
+            <span>${name}</span>
+          </div>
+          <div class="row">
+            <span class="badge">
+              <span class="dot"></span>
+              <span>${classLevelStr || '-'}</span>
+            </span>
+          </div>
+        </div>
+        <div class="card-body">
+          <div class="class-abilities-grid">
+            ${listHtml}
+          </div>
+        </div>
+      </div>
+    `;
+
+    cards.push(cardHtml);
+  });
+
+  if (!cards.length) {
+    container.innerHTML = '<p class="status">Nessuna abilità di classe trovata per i personaggi caricati.</p>';
+  } else {
+    container.innerHTML = cards.join('');
+  }
+}
+
+function attachCharacterDetailListeners() {
+  const container = document.getElementById('characterDetail');
+
+  // Campi base / stats / skill / attacchi
+  container.querySelectorAll('input[data-field], textarea[data-field], input[data-group], textarea[data-group], input[data-att-index]')
+    .forEach(el => {
+      el.addEventListener('input', () => {
+        const ch = characters[currentCharacterIndex];
+        const field = el.dataset.field;
+        const group = el.dataset.group;
+        const key = el.dataset.key;
+        const attIndex = el.dataset.attIndex;
+        const attField = el.dataset.attField;
+        const value = el.value;
+
+        if (!ch) return;
+
+        if (field) {
+          ch[field] = value;
+        } else if (group && key) {
+          ch[group] = ch[group] || {};
+          ch[group][key] = value;
+        } else if (attIndex != null && attField) {
+          const idx = Number(attIndex);
+          if (!Array.isArray(ch.attacks)) ch.attacks = [];
+          while (ch.attacks.length <= idx) {
+            ch.attacks.push({ nome: '', txc: '', danni: '', note: '' });
+          }
+          ch.attacks[idx][attField] = value;
+        }
+      });
+    });
+
+  // Gestore magie da database (overlay)
+  const btnPrepared = container.querySelector('#openPreparedFromDbBtn');
+  if (btnPrepared) {
+    btnPrepared.addEventListener('click', () => openSpellManager('prepared'));
+  }
+
+  // Export singolo PG
+  const exportBtn = container.querySelector('#exportCharacterBtn');
+  if (exportBtn) {
+    exportBtn.addEventListener('click', exportCurrentCharacter);
+  }
+
+  // ➕ trucchetti (aggiungi, non togli)
+  const addCantripBtn = container.querySelector('#addCantripRowBtn');
+  if (addCantripBtn) {
+    addCantripBtn.addEventListener('click', () => {
+      const ch = characters[currentCharacterIndex];
+      const currentList = splitSpellList(ch.cantrips);
+      const name = prompt('Nome trucchetto da aggiungere (verrà cercato nel database):');
+      if (!name) return;
+      const trimmed = name.trim();
+      if (!trimmed) return;
+      if (!currentList.includes(trimmed)) {
+        currentList.push(trimmed);
+        ch.cantrips = currentList.join(', ');
+        renderCharacterDetail();
+      }
+    });
+  }
+
+  // ➕ incantesimi preparati
+  const addPreparedBtn = container.querySelector('#addPreparedRowBtn');
+  if (addPreparedBtn) {
+    addPreparedBtn.addEventListener('click', () => {
+      const ch = characters[currentCharacterIndex];
+      const currentList = splitSpellList(ch.prepared);
+      const name = prompt('Nome incantesimo da aggiungere (verrà cercato nel database):');
+      if (!name) return;
+      const trimmed = name.trim();
+      if (!trimmed) return;
+      if (!currentList.includes(trimmed)) {
+        currentList.push(trimmed);
+        ch.prepared = currentList.join(', ');
+        renderCharacterDetail();
+      }
+    });
+  }
+
+  // ✖ rimuovi incantesimo preparato
+  container.querySelectorAll('[data-remove-prepared-index]').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const idx = Number(btn.getAttribute('data-remove-prepared-index'));
+      const ch = characters[currentCharacterIndex];
+      const currentList = splitSpellList(ch.prepared);
+      if (idx >= 0 && idx < currentList.length) {
+        currentList.splice(idx, 1);
+        ch.prepared = currentList.join(', ');
+        renderCharacterDetail();
+      }
+    });
+  });
+
+  // 🔹 INVENTARIO PERSONALE / CASSA COMUNE
+  const partyChest = characters.find(c => c && c.id === 'partyChest');
+
+  // Campi della cassa comune: gold / holder
+  container.querySelectorAll('input[data-party-field]').forEach(el => {
+    el.addEventListener('input', () => {
+      if (!partyChest) return;
+      const field = el.dataset.partyField; // "gold" o "holder"
+      partyChest[field] = el.value;
+    });
+  });
+}
+
+    function handleCharactersFileChange(event) {
+  const file = event.target.files && event.target.files[0];
+  if (!file) return;
+  const name = file.name.toLowerCase();
+  const ext = name.split('.').pop();
+
+  if (ext === 'json') {
+    const reader = new FileReader();
+    reader.onload = e => {
+      try {
+        const data = JSON.parse(e.target.result);
+        let arr;
+        if (Array.isArray(data)) {
+          arr = data;
+        } else if (Array.isArray(data.characters)) {
+          arr = data.characters;
+        } else if (Array.isArray(data.pg)) {
+          arr = data.pg;
+        } else {
+          arr = [data];
+        }
+
+        // 🔧 Normalizza magie importate dal file personaggi
+        characters = arr.map(normalizeCharacterMagic);
+
+        currentCharacterIndex = getFirstPlayableCharacterIndex();
+        renderCharacterSelector();
+        renderCharacterDetail();
+		renderClassAbilitiesTab()
+      } catch (err) {
+        alert('Errore nel JSON: ' + err.message);
+      }
+    };
+    reader.readAsText(file);
+
+  } else if (ext === 'xlsx' || ext === 'xls') {
+    if (typeof XLSX === 'undefined') {
+      alert('Per usare Excel devi mantenere lo script XLSX nel <head>.');
+      return;
+    }
+    const reader = new FileReader();
+    reader.onload = e => {
+      const data = new Uint8Array(e.target.result);
+      const workbook = XLSX.read(data, { type: 'array' });
+      const firstSheet = workbook.SheetNames[0];
+      const worksheet = workbook.Sheets[firstSheet];
+      const rows = XLSX.utils.sheet_to_json(worksheet, { defval: "" });
+      alert('Excel caricato con ' + rows.length + ' righe. Conversione in JSON da implementare se serve nel dettaglio.');
+    };
+    reader.readAsArrayBuffer(file);
+  } else {
+    alert('Formato non supportato. Usa JSON o Excel (.xlsx/.xls).');
+  }
+
+}
+
+let spellManagerMode = null;
+let spellManagerData = [];
+let spellManagerSelected = new Set();
+
+function openSpellManager(mode) {
+      const ch = characters[currentCharacterIndex];
+      if (!ch) return;
+      spellManagerMode = mode;
+      const overlay = document.getElementById('spellManagerOverlay');
+      const charClass = getCharacterClassName(ch);
+      const sourceString = mode === 'prepared' ? (ch.prepared || '') : (ch.cantrips || '');
+      const alreadySelected = splitSpellList(sourceString).map(s => s.toLowerCase());
+      spellManagerSelected = new Set(alreadySelected);
+
+      spellManagerData = libraryItems.filter(it => {
+        const tipo = String(it.tipo || '').toLowerCase();
+        const classe = String(it.classe || '');
+        const isSpell = !tipo || tipo === 'incantesimo';
+        const matchClass = !charClass || !classe || classe.toLowerCase() === charClass.toLowerCase();
+        return isSpell && matchClass;
+      });
+
+      const infoClasse = charClass ? ('Classe: ' + charClass) : 'Classe non rilevata (uso tutto il database).';
+
+      overlay.innerHTML = ''
+        + '<div class="overlay-panel">'
+        +   '<div class="overlay-header">'
+        +     '<div><strong>Gestore incantesimi – ' + (ch.name || '-') + '</strong><br><span style="font-size:.8rem;">' + infoClasse + '</span></div>'
+        +     '<button class="overlay-close" type="button" aria-label="Chiudi" onclick="closeSpellManager()">✖</button>'
+        +   '</div>'
+        +   '<div class="overlay-body">'
+        +     '<div class="spell-list">'
+        +       '<div class="spell-list-header">'
+        +         '<span>Seleziona gli incantesimi da ' + (mode === "prepared" ? 'preparare' : 'aggiungere come trucchetti') + '</span>'
+        +         '<span style="font-size:.8rem;">' + infoClasse + '</span>'
+        +       '</div>'
+        +       '<div class="spell-list-body" id="spellManagerList"></div>'
+        +     '</div>'
+        +   '</div>'
+        +   '<div class="overlay-footer">'
+        +     '<button class="btn secondary" type="button" onclick="closeSpellManager()">Annulla</button>'
+        +     '<button class="btn primary" type="button" onclick="confirmSpellManager()">Conferma</button>'
+        +   '</div>'
+        + '</div>';
+
+      overlay.classList.add('active');
+      renderSpellManagerList();
+    }
+
+function closeSpellManager() {
+  const overlay = document.getElementById('spellManagerOverlay');
+  overlay.classList.remove('active');
+  spellManagerMode = null;
+  spellManagerData = [];
+  spellManagerSelected.clear();
+}
+
+function renderSpellManagerList() {
+  const list = document.getElementById('spellManagerList');
+  if (!list) return;
+
+  if (!spellManagerData.length) {
+    list.innerHTML = '<p class="status">Nessun incantesimo compatibile trovato nella libreria.</p>';
+    return;
+  }
+
+  const html = spellManagerData.map(sp => {
+    const id = 'spellCheck_' + (sp.nome || '').replace(/\s+/g, '_');
+    const nome = sp.nome || '—';
+    const livello = sp.livello != null ? sp.livello : '-';
+    const txc = sp.txc_o_ts || '';
+    const danni = sp.danni || '';
+    const effetto = sp.effetto || '';
+    const selected = spellManagerSelected.has(nome.toLowerCase());
+
+    return `
+      <div class="spell-row">
+        <div class="spell-main">
+          <div class="spell-name">${nome}</div>
+          <div class="spell-meta">
+            <span class="pill-xs">Liv. ${livello}</span>
+            ${txc ? `<span class="pill-xs">TxC/TS: ${txc}</span>` : ''}
+            ${danni ? `<span class="pill-xs">Danni: ${danni}</span>` : ''}
+          </div>
+          <div class="spell-desc">${effetto}</div>
+        </div>
+        <div class="spell-act">
+          <input type="checkbox" id="${id}" ${selected ? 'checked' : ''} data-spell-name="${nome}" />
+        </div>
+      </div>
+    `;
+  }).join('');
+
+  list.innerHTML = html;
+
+  list.querySelectorAll('input[type="checkbox"][data-spell-name]').forEach(chk => {
+    chk.addEventListener('change', () => {
+      const name = (chk.dataset.spellName || '').toLowerCase();
+      if (!name) return;
+      if (chk.checked) {
+        spellManagerSelected.add(name);
+      } else {
+        spellManagerSelected.delete(name);
+      }
+    });
+  });
+}
+
+function confirmSpellManager() {
+  const ch = characters[currentCharacterIndex];
+  if (!ch || !spellManagerMode) return;
+
+  const names = [];
+  spellManagerData.forEach(sp => {
+    const nome = (sp.nome || '').trim();
+    if (!nome) return;
+    if (spellManagerSelected.has(nome.toLowerCase())) {
+      names.push(nome);
+    }
+  });
+
+  const fieldName = spellManagerMode === 'prepared' ? 'prepared' : 'cantrips';
+  ch[fieldName] = names.join(', ');
+
+  renderCharacterDetail();
+  closeSpellManager();
+}
+
+function exportCurrentCharacter() {
+  const ch = characters[currentCharacterIndex];
+  if (!ch) {
+    alert('Nessun personaggio selezionato.');
+    return;
+  }
+  downloadJSON(ch, (ch.name || 'personaggio') + '.json');
+}
+
+function exportAllCharacters() {
+  if (!characters.length) {
+    alert('Nessun personaggio da esportare.');
+    return;
+  }
+  downloadJSON(characters, 'personaggi.json');
+}
+
+    async function autoLoadCharactersFromRepo() {
+  // Prova a caricare automaticamente un JSON di personaggi dalla stessa repo (stessa cartella della pagina)
+  const candidateFiles = [];
+
+  // 1) Nome file passato nell'URL, es:
+  //    https://tubino85.github.io/SchedaPersonaggio/?pg=pg_sessione5_all.json
+  try {
+    const params = new URLSearchParams(window.location.search);
+    const fromPg   = params.get('pg');
+    const fromFile = params.get('file');
+    const fromJson = params.get('json');
+
+    [fromPg, fromFile, fromJson].forEach(f => {
+      if (f && /\.json$/i.test(f) && !candidateFiles.includes(f)) {
+        candidateFiles.push(f);
+      }
+    });
+  } catch (e) {
+    console.warn('URLSearchParams non disponibile o errore nel parsing dei parametri', e);
+  }
+
+  // 2) Se non è stato specificato niente, usa ancora il vecchio default
+  if (!candidateFiles.length) {
+    candidateFiles.push('pg_sessione4_all.json');
+  }
+
+  for (const file of candidateFiles) {
+    try {
+      const res = await fetch(file, { cache: 'no-store' });
+      if (!res.ok) continue;
+
+      const data = await res.json();
+      let arr;
+
+      // Formati supportati:
+      //  - [ {...}, {...} ]
+      //  - { "characters": [ ... ] }
+      //  - { "pg": [ ... ] }
+      if (Array.isArray(data)) {
+        arr = data;
+      } else if (Array.isArray(data.characters)) {
+        arr = data.characters;
+      } else if (Array.isArray(data.pg)) {
+        arr = data.pg;
+      } else {
+        console.warn('Formato JSON non riconosciuto per', file, data);
+        continue;
+      }
+
+      if (!arr || !arr.length) {
+        console.warn('Nessun personaggio trovato in', file);
+        continue;
+      }
+
+      // separa eventuale cassa comune
+      let partyFromData = null;
+      const playable = [];
+
+      arr.forEach(ch => {
+        if (!ch) return;
+        const id = (ch.id || '').toLowerCase();
+        if (id === 'partychest' || ch.isPartyChest) {
+          partyFromData = ch;
+        } else {
+          playable.push(ch);
+        }
+      });
+
+      characters = playable.map(normalizeCharacterMagic);
+
+      // se nel file c'è già la cassa, usala; altrimenti tieni quella in memoria o creane una
+      if (partyFromData) {
+        partyChest = partyFromData;
+      } else {
+        partyChest = partyChest || {
+          id: 'partyChest',
+          name: 'Cassa Comune',
+          inventory: '',
+          gold: '',
+          holder: ''
+        };
+      }
+
+      currentCharacterIndex = getFirstPlayableCharacterIndex();
+      console.log('Caricati personaggi da', file, '→', characters.length, 'PG');
+      return; // fermati al primo file che funziona
+    } catch (err) {
+      console.warn('Impossibile caricare personaggi da', file, err);
+    }
+  }
+
+  console.warn('autoLoadCharactersFromRepo: nessun file JSON caricato con successo.');
+}
+
+document.addEventListener('DOMContentLoaded', async () => {
+      setupTabs();
+
+      if (!characters.length) {
+        await autoLoadCharactersFromRepo();
+      }
+
+      renderCharacterSelector();
+      renderCharacterDetail();
+	  renderClassAbilitiesTab();
+
+      const charsInput = document.getElementById('charactersFileInput');
+      if (charsInput) charsInput.addEventListener('change', handleCharactersFileChange);
+
+      const libraryStatus = document.getElementById('libraryStatus');
+      if (libraryStatus) libraryStatus.textContent = 'Elementi in libreria (database interno): ' + libraryItems.length;
+      updateLibraryFilters();
+      renderLibrary();
+      ['filterTipo','filterClasse','filterLivello','filterSearch'].forEach(id => {
+        const el = document.getElementById(id);
+        if (el) {
+          el.addEventListener('input', renderLibrary);
+          el.addEventListener('change', renderLibrary);
+        }
+      });
+
+      const exportAllBtn = document.getElementById('exportAllCharsBtn');
+      if (exportAllBtn) {
+        exportAllBtn.addEventListener('click', exportAllCharacters);
+      }
+    });
+  </script>
+</body>
+</html>
