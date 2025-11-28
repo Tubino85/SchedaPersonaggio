@@ -209,8 +209,7 @@
     "slots": "1°: 4/4; 2°: 2/2",
     "attacks": [
       { "nome": "Martello da guerra", "txc": "+5", "danni": "1d8+3 contundenti (1 mano); 1d10+3 (2 mani)", "note": "" },
-      { "nome": "Ascia a mano", "txc": "+5", "danni": "1d6+3 taglienti (6/18 m)", "note": "" },
-      { "nome": "Pugnale rituale +1 purificato", "txc": "+6", "danni": "1d4+4 perforanti", "note": "finesse; lancio 6/18 m; consacrato al Custode" }
+      { "nome": "Ascia a mano", "txc": "+5", "danni": "1d6+3 taglienti (6/18 m)", "note": "" }
     ],
     "inventory": [
       "Maglia a scaglie",
@@ -226,4 +225,5 @@
       "Monete personali: 17 mo"
     ]
   }
+
 ]
