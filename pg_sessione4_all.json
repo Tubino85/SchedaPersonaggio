@@ -1,7 +1,7 @@
 [
   {
     "id": "partyChest",
-    "gold": "85 mo",
+    "gold": "85 mo (fondo comune: 1 ma, 3 mr)",
     "holder": "Tubino"
   },
   {
@@ -9,42 +9,63 @@
     "name": "Tubino Manolesta",
     "image": "img/tubino.png",
     "classLevel": "Ladro 3 (Assassino)",
-    "exp": "2.000 / 2.700",
+    "exp": "2.281 / 2.700",
     "hp": "24",
     "ac": "14",
     "speed": "7,5 m",
     "initiative": "+3",
-    "stats": { "for": "10", "des": "16", "cos": "14", "int": "13", "sag": "12", "car": "12" },
-    "saves": { "for": "+0", "des": "+5", "cos": "+2", "int": "+3", "sag": "+1", "car": "+1" },
-    "skills": {
-      "atletica": "",
-      "acrobazia": "+5",
-      "rapidita": "+5",
-      "furtivita": "+7",
-      "arcana": "",
-      "indagare": "+3",
-      "natura": "",
-      "religione": "",
-      "storia": "",
-      "addestrare": "",
-      "intuizione": "",
-      "medicina": "",
-      "percezione": "+1",
-      "sopravvivenza": "",
-      "raggirare": "+1",
-      "intimidire": "",
-      "intrattenere": "",
-      "persuasione": ""
+    "stats": {
+      "for": "10",
+      "des": "16",
+      "cos": "14",
+      "int": "13",
+      "sag": "12",
+      "car": "12"
     },
-    "cantrips": "",
-    "prepared": "",
-    "slots": "",
-    "attacks": [
-      { "nome": "Rapiere", "txc": "+5", "danni": "1d8+3 perforanti", "note": "" },
-      { "nome": "Pugnale rituale +1 (anello spezzato)", "txc": "+6", "danni": "1d4+4 perforanti", "note": "finesse; lancio 6/18 m" },
-      { "nome": "Arco corto", "txc": "+5", "danni": "1d6+3 perforanti (24/96 m)", "note": "Frecce: 12" },
-      { "nome": "Pugnale", "txc": "+5", "danni": "1d4+3 perforanti (off-hand 1d4)", "note": "" }
+    "saves": {
+      "for": "+0",
+      "des": "+5",
+      "cos": "+2",
+      "int": "+1",
+      "sag": "+1",
+      "car": "+1"
+    },
+    "skills": {
+      "acr": "+5",
+      "ani": "+1",
+      "arc": "+1",
+      "ath": "+0",
+      "dec": "+3",
+      "his": "+1",
+      "ins": "+3",
+      "itm": "+3",
+      "inv": "+3",
+      "med": "+1",
+      "nat": "+1",
+      "prc": "+5",
+      "prf": "+1",
+      "per": "+1",
+      "rel": "+1",
+      "slt": "+7",
+      "ste": "+7",
+      "sur": "+3"
+    },
+    "proficiencies": [
+      "Armature leggere",
+      "Armi semplici, balestre a mano, spade corte, spade lunghe, rapier",
+      "Strumenti da scasso (Expertise)",
+      "Kit travestimento",
+      "Kit falsificazione"
     ],
+    "features": [
+      "Attacco Furtivo (2d6)",
+      "Scaltrezza",
+      "Azione scaltra",
+      "Assassino (vantaggio e critico automatico contro creature sorprese)",
+      "Competenza nei travestimenti e nei falsi",
+      "Allerta (talento, se presente nelle note)"
+    ],
+    "spells": [],
     "inventory": [
       "Armatura di cuoio",
       "Rapiere",
@@ -66,48 +87,72 @@
       "Sacchetto di cenere grigio-verde",
       "Chiave di ferro particolare",
       "Pozione di guarigione ×1",
-      "Monete personali: 17 mo"
-    ]
+      "Campanello d'allarme del culto (recuperato nel corridoio)",
+      "Monete personali: 20 mo"
+    ],
+    "notes": ""
   },
   {
     "id": "padez",
     "name": "Padez Silvaran",
     "image": "img/padez.png",
-    "classLevel": "Druido 3 (Circolo della Terra — Foresta)",
-    "exp": "2.000 / 2.700",
-    "hp": "16",
-    "ac": "14",
-    "speed": "10,5 m",
-    "initiative": "+1",
-    "stats": { "for": "11", "des": "13", "cos": "11", "int": "10", "sag": "12", "car": "8" },
-    "saves": { "for": "+0", "des": "+1", "cos": "+0", "int": "+2", "sag": "+3", "car": "-1" },
-    "skills": {
-      "atletica": "",
-      "acrobazia": "",
-      "rapidita": "",
-      "furtivita": "",
-      "arcana": "",
-      "indagare": "",
-      "natura": "+2",
-      "religione": "+2",
-      "storia": "",
-      "addestrare": "",
-      "intuizione": "+3",
-      "medicina": "+3",
-      "percezione": "+3",
-      "sopravvivenza": "+3",
-      "raggirare": "",
-      "intimidire": "",
-      "intrattenere": "",
-      "persuasione": ""
+    "classLevel": "Druido 3 (Circolo della Terra)",
+    "exp": "2.281 / 2.700",
+    "hp": "24",
+    "ac": "16",
+    "speed": "9 m",
+    "initiative": "+0",
+    "stats": {
+      "for": "10",
+      "des": "10",
+      "cos": "14",
+      "int": "12",
+      "sag": "16",
+      "car": "10"
     },
-    "cantrips": "Guida (Guidance), Produrre Fiamma (Produce Flame), Spruzzo Velenoso (Poison Spray)",
-    "prepared": "Parola Guaritrice (Healing Word), Bacche Benefiche (Goodberry), Raggio di Luna (Moonbeam), Crescita Spinosa (Spike Growth), Pelle di Corteccia (Barkskin), Camminare sui Muri (Spider Climb)",
-    "slots": "1°: 4/4; 2°: 2/2",
-    "attacks": [
-      { "nome": "Bastone ferrato", "txc": "+3", "danni": "1d6+1 contundenti (1d8+1 a due mani)", "note": "" },
-      { "nome": "Fionda", "txc": "+3", "danni": "1d4+1 contundenti (9/36 m)", "note": "" },
-      { "nome": "Produrre Fiamma (Produce Flame)", "txc": "+3", "danni": "1d8 fuoco (9 m)", "note": "Trucchetto" }
+    "saves": {
+      "for": "+0",
+      "des": "+0",
+      "cos": "+2",
+      "int": "+1",
+      "sag": "+5",
+      "car": "+0"
+    },
+    "skills": {
+      "acr": "+0",
+      "ani": "+5",
+      "arc": "+1",
+      "ath": "+0",
+      "dec": "+0",
+      "his": "+1",
+      "ins": "+5",
+      "itm": "+0",
+      "inv": "+1",
+      "med": "+5",
+      "nat": "+3",
+      "prc": "+5",
+      "prf": "+0",
+      "per": "+0",
+      "rel": "+1",
+      "slt": "+0",
+      "ste": "+0",
+      "sur": "+5"
+    },
+    "proficiencies": [
+      "Armature leggere e medie non metalliche, scudi non metallici",
+      "Armi semplici, bastoni, fionde, giavellotti, lance",
+      "Druidi: non indossano armature o scudi di metallo"
+    ],
+    "features": [
+      "Incantesimi druidici",
+      "Forma selvatica (2 usi, CR max 1/4, niente volanti)",
+      "Circolo della Terra (Foresta) – slot extra, recupero incantesimi",
+      "Passare senza tracce (se preparato)",
+      "Spirito della Foresta (come colore di background)"
+    ],
+    "spells": [
+      "Trucchetti: Druidcraft, Frusta di spine, Prodigi di fiamma",
+      "Incantesimi preparati: Cura ferite, Entangle, Raggio lunare, Passare senza tracce, Parola guaritrice, Camminare sui muri (Spider Climb), altro come da lista precedente"
     ],
     "inventory": [
       "Bastone ferrato",
@@ -117,48 +162,69 @@
       "Zaino da esploratore (torce, razioni, otre, corda, ecc.)",
       "Piccoli talismani lignei degli spiriti della foresta",
       "Pozione di guarigione ×1",
-      "Monete personali: 17 mo"
-    ]
+      "Monete personali: 20 mo"
+    ],
+    "notes": ""
   },
   {
     "id": "erasmo",
     "name": "Erasmo di Cenere",
     "image": "img/erasmo.png",
-    "classLevel": "Mago 3 (Invocazione)",
-    "exp": "2.000 / 2.700",
+    "classLevel": "Mago 3 (Scuola da definire)",
+    "exp": "2.281 / 2.700",
     "hp": "20",
-    "ac": "12 (15 con Armatura Magica (Mage Armor))",
+    "ac": "13",
     "speed": "9 m",
     "initiative": "+2",
-    "stats": { "for": "10", "des": "14", "cos": "14", "int": "16", "sag": "12", "car": "11" },
-    "saves": { "for": "+0", "des": "+2", "cos": "+2", "int": "+5", "sag": "+3", "car": "+0" },
-    "skills": {
-      "atletica": "",
-      "acrobazia": "",
-      "rapidita": "",
-      "furtivita": "",
-      "arcana": "+5",
-      "indagare": "+5",
-      "natura": "",
-      "religione": "+5",
-      "storia": "+5",
-      "addestrare": "",
-      "intuizione": "",
-      "medicina": "",
-      "percezione": "+1",
-      "sopravvivenza": "",
-      "raggirare": "",
-      "intimidire": "",
-      "intrattenere": "",
-      "persuasione": ""
+    "stats": {
+      "for": "8",
+      "des": "14",
+      "cos": "12",
+      "int": "16",
+      "sag": "12",
+      "car": "10"
     },
-    "cantrips": "Dardo di Fuoco (Fire Bolt), Raggio di Gelo (Ray of Frost), Mano Magica (Mage Hand)",
-    "prepared": "Armatura Magica (Mage Armor), Scudo (Shield), Dardo Incantato (Magic Missile), Sonno (Sleep), Raggio Rovente (Scorching Ray), Immagine Speculare (Mirror Image)",
-    "slots": "1°: 4/4; 2°: 2/2",
-    "attacks": [
-      { "nome": "Bastone", "txc": "+2", "danni": "1d6 contundenti (1d8 a due mani)", "note": "" },
-      { "nome": "Dardo di Fuoco (Fire Bolt)", "txc": "+5", "danni": "1d10 fuoco (36 m)", "note": "Trucchetto" },
-      { "nome": "Raggio di Gelo (Ray of Frost)", "txc": "+5", "danni": "1d8 freddo", "note": "Trucchetto; -3 m alla velocità" }
+    "saves": {
+      "for": "-1",
+      "des": "+2",
+      "cos": "+1",
+      "int": "+5",
+      "sag": "+1",
+      "car": "+0"
+    },
+    "skills": {
+      "acr": "+2",
+      "ani": "+1",
+      "arc": "+5",
+      "ath": "-1",
+      "dec": "+0",
+      "his": "+5",
+      "ins": "+3",
+      "itm": "+0",
+      "inv": "+5",
+      "med": "+1",
+      "nat": "+3",
+      "prc": "+1",
+      "prf": "+0",
+      "per": "+0",
+      "rel": "+3",
+      "slt": "+2",
+      "ste": "+2",
+      "sur": "+1"
+    },
+    "proficiencies": [
+      "Armi semplici",
+      "Niente armature",
+      "Strumenti da scrittura / studio"
+    ],
+    "features": [
+      "Arcano Recuperato",
+      "Tradizione arcana (scuola) – da definire",
+      "Incantesimi di 1° e 2° livello, Immagine speculare, Dardi incantati, Dardo di fuoco, ecc."
+    ],
+    "spells": [
+      "Trucchetti: Dardo di fuoco, Luce, Mano magica, Prestidigitazione",
+      "Incantesimi memorizzati: Immagine speculare, Dardi incantati, Scudo, Armatura magica, Assorbire elementi, ecc. (come da tua lista precedente)"
     ],
     "inventory": [
       "Bastone (focus)",
@@ -169,47 +235,72 @@
       "Chiave di ferro con anello spezzato",
       "Pergamena di Flagello (Bane)",
       "Appunti su Cuore Profondo, gole, Maestro delle Ceneri",
-      "Monete personali: 17 mo"
-    ]
+      "Mappa del culto: magazzino, Gola Minore, 'secondo nido' nella Macchia Vecchia",
+      "Pergamene e tavoletta del sacerdote del Cuore (note sul legame alla superficie)",
+      "Monete personali: 20 mo"
+    ],
+    "notes": ""
   },
   {
     "id": "turi",
     "name": "Turi Spaccaculi",
     "image": "img/turi.png",
     "classLevel": "Chierico 3 (Dominio della Guerra)",
-    "exp": "2.000 / 2.700",
+    "exp": "2.281 / 2.700",
     "hp": "32",
     "ac": "18",
     "speed": "7,5 m",
-    "initiative": "+2",
-    "stats": { "for": "16", "des": "14", "cos": "18", "int": "13", "sag": "18", "car": "13" },
-    "saves": { "for": "+3", "des": "+2", "cos": "+4", "int": "+1", "sag": "+6", "car": "+3" },
-    "skills": {
-      "atletica": "+5",
-      "acrobazia": "",
-      "rapidita": "",
-      "furtivita": "",
-      "arcana": "",
-      "indagare": "",
-      "natura": "",
-      "religione": "+3",
-      "storia": "",
-      "addestrare": "",
-      "intuizione": "",
-      "medicina": "+6",
-      "percezione": "",
-      "sopravvivenza": "",
-      "raggirare": "",
-      "intimidire": "+3",
-      "intrattenere": "",
-      "persuasione": ""
+    "initiative": "-1",
+    "stats": {
+      "for": "16",
+      "des": "8",
+      "cos": "16",
+      "int": "10",
+      "sag": "16",
+      "car": "12"
     },
-    "cantrips": "Fiamma Sacra (Sacred Flame), Guida (Guidance), Taumaturgia (Thaumaturgy)",
-    "prepared": "Benedizione (Bless), Cura Ferite (Cure Wounds), Parola Guaritrice (Healing Word), Dardo Tracciante (Guiding Bolt), Comando (Command), Santuario (Sanctuary), Aiuto (Aid), Favore Divino (Divine Favor), Scudo della Fede (Shield of Faith), Arma Spirituale (Spiritual Weapon), Arma Magica (Magic Weapon)",
-    "slots": "1°: 4/4; 2°: 2/2",
-    "attacks": [
-      { "nome": "Martello da guerra", "txc": "+5", "danni": "1d8+3 contundenti (1 mano); 1d10+3 (2 mani)", "note": "" },
-      { "nome": "Ascia a mano", "txc": "+5", "danni": "1d6+3 taglienti (6/18 m)", "note": "" }
+    "saves": {
+      "for": "+3",
+      "des": "-1",
+      "cos": "+3",
+      "int": "+0",
+      "sag": "+5",
+      "car": "+1"
+    },
+    "skills": {
+      "acr": "-1",
+      "ani": "+3",
+      "arc": "+0",
+      "ath": "+5",
+      "dec": "+1",
+      "his": "+0",
+      "ins": "+3",
+      "itm": "+1",
+      "inv": "+0",
+      "med": "+3",
+      "nat": "+0",
+      "prc": "+3",
+      "prf": "+1",
+      "per": "+1",
+      "rel": "+3",
+      "slt": "-1",
+      "ste": "-1",
+      "sur": "+3"
+    },
+    "proficiencies": [
+      "Armature leggere, medie, pesanti",
+      "Scudi",
+      "Armi semplici e da guerra"
+    ],
+    "features": [
+      "Canalizzare Divinità (1/risposo breve)",
+      "Dominio della Guerra (attacco extra come azione bonus, benedizione marziale)",
+      "Incantesimi da Chierico di Guerra",
+      "Fiamma sacra, Cura ferite, Benedizione, ecc."
+    ],
+    "spells": [
+      "Trucchetti: Fiamma sacra, Guida, Taumaturgia",
+      "Incantesimi preparati: Cura ferite, Benedizione, Scudo della fede, Guiding Bolt, ecc."
     ],
     "inventory": [
       "Maglia a scaglie",
@@ -222,7 +313,8 @@
       "Attrezzi da fabbro",
       "Dadi d’osso, insegna di servizio, trofeo di guerra",
       "Zaino da esploratore (gamella, pietra focaia, torce, razioni, otre, corda)",
-      "Monete personali: 17 mo"
-    ]
+      "Monete personali: 20 mo"
+    ],
+    "notes": ""
   }
-]
+    ]
